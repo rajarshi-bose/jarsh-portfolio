@@ -265,8 +265,18 @@ img.pixel { width: 100%; height: 100%; object-fit: cover; image-rendering: pixel
 }
 .project-hero .icon-lg svg { width: 55%; height: 55%; }
 /* Launchable project art: hover blurs the art and reveals LAUNCH */
-.project-hero .launchable { position: relative; overflow: hidden; text-decoration: none; transition: box-shadow .25s ease; }
-.launchable .art { position: absolute; inset: 0; display: grid; place-items: center; transition: filter .35s ease, opacity .35s ease, transform .35s ease; }
+/* The frame lives on the .art layer so the border blurs together with the image */
+.project-hero .launchable { position: relative; overflow: hidden; text-decoration: none; transition: box-shadow .25s ease; border: 0; background: var(--frame); }
+.launchable .art {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  border: 16px solid var(--frame); background: var(--tile); overflow: hidden;
+  transition: filter .35s ease, opacity .35s ease, transform .35s ease;
+}
+.launch-hint {
+  font-family: var(--font-mono); font-variation-settings: "MONO" 1;
+  font-size: .8rem; letter-spacing: .04em; color: var(--accent);
+  margin: -18px 0 28px;
+}
 .launchable .art svg { width: 55%; height: 55%; }
 .launchable .launch-label {
   position: absolute; inset: 0; display: grid; place-items: center;
@@ -278,6 +288,7 @@ img.pixel { width: 100%; height: 100%; object-fit: cover; image-rendering: pixel
 .launchable:hover .launch-label, .launchable:focus-visible .launch-label { opacity: 1; transform: none; }
 .launchable:hover, .launchable:focus-visible { box-shadow: 0 0 0 3px var(--accent); }
 @media (hover: none) {
+  .launchable .art { border-width: 12px; }
   .launchable .launch-label { opacity: 1; transform: none; inset: auto 0 0 0; place-items: end center; padding-bottom: 10px; font-size: 1rem; }
 }
 
@@ -555,6 +566,10 @@ const projects = [
 // ---------- Change log ----------
 // Newest first. Each update adds 0.01 to the version.
 const CHANGELOG = [
+  { v: "1.07", date: "2026-10-19", notes: [
+    "Launch art now blurs its border along with the image",
+    "Added a note telling visitors they can click the image to launch"
+  ]},
   { v: "1.06", date: "2026-10-19", notes: [
     "Ten Year Tape page: hover the art to launch the game"
   ]},
@@ -629,6 +644,7 @@ function projectView(p) {
         <h1 class="page-title">${p.title}</h1>
         <p class="meta-line"><span>Project Type: <b>${p.type}</b></span><span>Status: <b>${p.status}</b></span></p>
         <p class="lede">${p.summary}</p>
+        ${p.launch ? `<p class="launch-hint">▸ Click the image to launch ${p.title}. It opens in a new tab.</p>` : ""}
       </div>
       ${p.launch
         ? `<a class="icon-lg launchable${p.img ? " has-img" : ""}" href="${p.launch}" target="_blank" rel="noopener" aria-label="Launch ${p.title} (opens in a new tab)"><span class="art">${iconOf(p)}</span><span class="launch-label">Launch ↗</span></a>`
