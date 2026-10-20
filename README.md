@@ -14,7 +14,7 @@ Personal portfolio for Rajarshi "Jarsh" Bose, a Mechanical Engineering student a
 - **About:** education, research, and where I'm headed.
 - **Art Collection:** work made outside the lab.
 
-Featured projects include [Ten Year Tape](https://github.com/rajarshi-bose/ten-year-tape), [Isle of Man](https://jarsh.us/isle-of-man/), [Dither Press](https://jarsh.us/dither-press/), and my research and Formula SAE work. Dither Press and Isle of Man are hosted in this repo under `dither-press/` and `isle-of-man/`; `ten-year-tape/` forwards to the game's own repo.
+Featured projects include [Ten Year Tape](https://github.com/rajarshi-bose/ten-year-tape), [Isle of Man](https://github.com/rajarshi-bose/isle-of-man), [Dither Press](https://github.com/rajarshi-bose/dither-press), and my research and Formula SAE work. Each app lives in its own repo; `dither-press/`, `isle-of-man/` and `ten-year-tape/` here are short jarsh.us links that forward to them.
 
 ## How it's built
 
