@@ -1,4 +1,4 @@
-# rajarshi-bose.github.io
+# jarsh-portfolio
 
 Portfolio website that connects to the rest of my projects.
 
@@ -14,7 +14,7 @@ Personal portfolio for Rajarshi "Jarsh" Bose, a Mechanical Engineering student a
 - **About:** education, research, and where I'm headed.
 - **Art Collection:** work made outside the lab.
 
-Featured projects include [Ten Year Tape](https://github.com/rajarshi-bose/ten-year-tape), [Isle of Man](https://github.com/rajarshi-bose/isle-of-man), [Dither Press](https://github.com/rajarshi-bose/dither-press), and my research and Formula SAE work. Each app lives in its own repo. Because this is my main GitHub Pages site on `jarsh.us`, every other repo with Pages turned on appears under the same domain: [jarsh.us/ten-year-tape](https://jarsh.us/ten-year-tape/), [jarsh.us/dither-press](https://jarsh.us/dither-press/) and [jarsh.us/isle-of-man](https://jarsh.us/isle-of-man/).
+Featured projects include [Ten Year Tape](https://github.com/rajarshi-bose/ten-year-tape), [Isle of Man](https://github.com/rajarshi-bose/isle-of-man), [Dither Press](https://github.com/rajarshi-bose/dither-press), and my research and Formula SAE work. Each app lives in its own repo; `dither-press/`, `isle-of-man/` and `ten-year-tape/` here are short jarsh.us links that forward to them.
 
 ## How it's built
 
