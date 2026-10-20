@@ -18,7 +18,7 @@ Featured projects include [Ten Year Tape](https://github.com/rajarshi-bose/ten-y
 
 ## How it's built
 
-The whole site is a single `index.html` file with no build step: plain HTML, CSS, and JavaScript. Fonts are Geist Pixel (headings), Red Hat Mono (body text), and Sono (labels). It's hosted on GitHub Pages with the custom domain `jarsh.us`.
+The whole site is a single `index.html` file with no build step: plain HTML, CSS, and JavaScript. Fonts are Geist Pixel (headings), Fragment Mono (body text), and Sono (labels). It's hosted on GitHub Pages with the custom domain `jarsh.us`.
 
 ## Versions
 
