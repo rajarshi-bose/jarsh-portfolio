@@ -287,33 +287,6 @@ img.pixel { width: 100%; height: 100%; object-fit: cover; image-rendering: pixel
 }
 @keyframes hint-flash { 50% { opacity: 0; } }
 
-/* ---------- In-site game player ---------- */
-.player {
-  position: fixed; inset: 0; z-index: 50;
-  display: grid; place-items: center;
-  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
-  background: color-mix(in srgb, var(--ink) 85%, transparent);
-}
-.player[hidden] { display: none; }
-.player-box {
-  width: min(1200px, 100%); height: min(860px, 100%);
-  display: flex; flex-direction: column;
-  background: var(--frame); border: 12px solid var(--frame);
-  box-shadow: 0 0 0 3px var(--accent);
-}
-.player-bar {
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-  padding: 0 2px 10px;
-  font-family: var(--font-mono); font-variation-settings: "MONO" 1;
-  font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ink);
-}
-.player-bar strong { font-family: var(--font-display); font-weight: 400; font-size: 1.1rem; letter-spacing: .02em; margin-right: auto; }
-.player-bar a, .player-bar button {
-  font: inherit; letter-spacing: inherit; text-transform: inherit; color: var(--ink);
-  background: none; border: 1px solid var(--line); padding: 4px 10px; cursor: pointer; text-decoration: none;
-}
-.player-bar a:hover, .player-bar button:hover { border-color: var(--accent); color: var(--accent); }
-.player iframe { flex: 1; width: 100%; border: 0; background: var(--ink); display: block; }
 .launchable:hover .launch-hint, .launchable:focus-visible .launch-hint { animation: none; opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .launch-hint { animation: none; } }
 .launchable .art svg { width: 55%; height: 55%; }
@@ -447,18 +420,6 @@ footer .wrap { display: flex; justify-content: space-between; align-items: flex-
 </header>
 
 <main class="wrap" id="app"></main>
-
-<div class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="player-title" hidden>
-  <div class="player-box">
-    <div class="player-bar">
-      <strong id="player-title">Game</strong>
-      <button type="button" id="player-full">Fullscreen</button>
-      <a id="player-newtab" href="#" target="_blank" rel="noopener">New tab ↗</a>
-      <button type="button" id="player-close" aria-label="Close game">Close ✕</button>
-    </div>
-    <iframe id="player-frame" title="Game" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe>
-  </div>
-</div>
 
 <footer>
   <div class="wrap">
@@ -618,6 +579,9 @@ const projects = [
 // ---------- Change log ----------
 // Newest first. Each update adds 0.01 to the version.
 const CHANGELOG = [
+  { v: "1.11", date: "2026-10-19", notes: [
+    "Removed the in-site player; launching a game opens it in a new tab"
+  ]},
   { v: "1.10", date: "2026-10-19", notes: [
     "New pixel favicon for the site and for Ten Year Tape"
   ]},
@@ -810,46 +774,7 @@ document.getElementById("log-panel").innerHTML = `<h4>Change log</h4>` + CHANGEL
   <ul>${e.notes.map(n => `<li>${n}</li>`).join("")}</ul></div>`).join("");
 document.addEventListener("click", (e) => { const l = document.getElementById("log"); if (l.open && !l.contains(e.target)) l.open = false; });
 
-// ---------- In-site game player ----------
-// On the live site the game opens in a player over the page. When this page is itself
-// shown inside another frame (like a preview), it falls back to opening a new tab.
-const player = document.getElementById("player");
-const playerFrame = document.getElementById("player-frame");
-let lastFocus = null;
-function openPlayer(url, title) {
-  lastFocus = document.activeElement;
-  document.getElementById("player-title").textContent = title;
-  document.getElementById("player-newtab").href = url;
-  playerFrame.title = title;
-  playerFrame.src = url;
-  player.hidden = false;
-  document.body.style.overflow = "hidden";
-  playerFrame.addEventListener("load", () => { try { playerFrame.focus(); } catch (_) {} }, { once: true });
-  document.getElementById("player-close").focus();
-}
-function closePlayer() {
-  if (player.hidden) return;
-  player.hidden = true;
-  playerFrame.src = "about:blank";
-  document.body.style.overflow = "";
-  if (lastFocus) lastFocus.focus();
-}
-document.addEventListener("click", (e) => {
-  const a = e.target.closest("a.launchable");
-  if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
-  if (window.self !== window.top) return;   // in a preview frame: keep the new-tab link
-  e.preventDefault();
-  openPlayer(a.href, a.getAttribute("aria-label").replace(/^Launch | \(opens.*$/g, ""));
-});
-document.getElementById("player-close").addEventListener("click", closePlayer);
-player.addEventListener("click", (e) => { if (e.target === player) closePlayer(); });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") closePlayer(); });
-document.getElementById("player-full").addEventListener("click", () => {
-  const p = playerFrame.requestFullscreen ? playerFrame.requestFullscreen() : null;
-  if (p && p.catch) p.catch(() => {});
-});
-
-window.addEventListener("popstate", () => { closePlayer(); show(hashRoute()); });
+window.addEventListener("popstate", () => show(hashRoute()));
 show(hashRoute());
 </script>
 
