@@ -264,6 +264,22 @@ img.pixel { width: 100%; height: 100%; object-fit: cover; image-rendering: pixel
   display: grid; place-items: center; color: var(--accent);
 }
 .project-hero .icon-lg svg { width: 55%; height: 55%; }
+/* Launchable project art: hover blurs the art and reveals LAUNCH */
+.project-hero .launchable { position: relative; overflow: hidden; text-decoration: none; transition: box-shadow .25s ease; }
+.launchable .art { position: absolute; inset: 0; display: grid; place-items: center; transition: filter .35s ease, opacity .35s ease, transform .35s ease; }
+.launchable .art svg { width: 55%; height: 55%; }
+.launchable .launch-label {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font-family: var(--font-display); font-size: clamp(1.1rem, 3vw, 1.6rem);
+  text-transform: uppercase; letter-spacing: .04em; color: var(--ink);
+  opacity: 0; transform: translateY(6px); transition: opacity .3s ease, transform .3s ease;
+}
+.launchable:hover .art, .launchable:focus-visible .art { filter: blur(9px); opacity: .35; transform: scale(1.03); }
+.launchable:hover .launch-label, .launchable:focus-visible .launch-label { opacity: 1; transform: none; }
+.launchable:hover, .launchable:focus-visible { box-shadow: 0 0 0 3px var(--accent); }
+@media (hover: none) {
+  .launchable .launch-label { opacity: 1; transform: none; inset: auto 0 0 0; place-items: end center; padding-bottom: 10px; font-size: 1rem; }
+}
 
 .specs {
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -495,6 +511,7 @@ const projects = [
     id: "ten-year-tape",
     title: "Ten Year Tape",
     tag: "Game",
+    launch: "https://rajarshi-bose.github.io/ten-year-tape/",
     type: "Game", status: "Complete",
     img: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAABd0lEQVR42u1UsXHDMAyEeKpSqOYE5ACu0msIDaAV3GaBrOABPIR6zyBNkFqFK5+TAjQNAgQl21GTC46FTgTweODByjkHW5qBje13AC6frgRQuGY2Hr7wZG9P56uENGuqiNnlN0bV+wkA3t8Mg0kA0IldJzbM+e+i1Y81O+Ztm8vO1fsJy4qEfG+RB/4HgCor09P5in5Ji7oJ2iYi+aOTrUOMZ1QUJjTM4USkpdaZlakD5bYJhyXKAtMZ0CaunAEcyX/SOgDLAZj+ShhaIg04MKDUSCSOOurheQYyUkroNQbFEvgM0HM1AzN2U1kGeQZ0cjS7CDd3J6E/2qiQTkg+2TIp3ztAkUGShXkySG0PZBOTzaCRst10wsM8HpI3o/r+4F32veUvfvbtjA3RZ+B7qzDgm6GkkxoVK1WrQmZhWjoJmabS90BWmvFcYDB2M5nB7cL3NiyHLr6FphGHGwCTl5xBgQGDTB0yDLKFvMxgqZB/Bn+DwTb2A2p0TTG9DNbXAAAAAElFTkSuQmCC",
     summary: "A stock market trading game. Replace this line with a one-sentence pitch for the game.",
@@ -538,6 +555,9 @@ const projects = [
 // ---------- Change log ----------
 // Newest first. Each update adds 0.01 to the version.
 const CHANGELOG = [
+  { v: "1.06", date: "2026-10-19", notes: [
+    "Ten Year Tape page: hover the art to launch the game"
+  ]},
   { v: "1.05", date: "2026-10-19", notes: [
     "Body text switched to Fragment Mono, a neutral Helvetica-style monospace"
   ]},
@@ -610,7 +630,9 @@ function projectView(p) {
         <p class="meta-line"><span>Project Type: <b>${p.type}</b></span><span>Status: <b>${p.status}</b></span></p>
         <p class="lede">${p.summary}</p>
       </div>
-      <div class="icon-lg${p.img ? " has-img" : ""}">${iconOf(p)}</div>
+      ${p.launch
+        ? `<a class="icon-lg launchable${p.img ? " has-img" : ""}" href="${p.launch}" target="_blank" rel="noopener" aria-label="Launch ${p.title} (opens in a new tab)"><span class="art">${iconOf(p)}</span><span class="launch-label">Launch ↗</span></a>`
+        : `<div class="icon-lg${p.img ? " has-img" : ""}">${iconOf(p)}</div>`}
     </section>
     <dl class="specs">${specs}</dl>
     <article class="prose">${body}</article>`;
