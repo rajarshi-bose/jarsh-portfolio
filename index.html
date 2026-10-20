@@ -272,11 +272,19 @@ img.pixel { width: 100%; height: 100%; object-fit: cover; image-rendering: pixel
   border: 16px solid var(--frame); background: var(--tile); overflow: hidden;
   transition: filter .35s ease, opacity .35s ease, transform .35s ease;
 }
+/* Flashing prompt over the art; hides on hover when LAUNCH takes over */
 .launch-hint {
+  position: absolute; left: 16px; right: 16px; bottom: 16px; z-index: 2;
+  padding: 6px 8px; text-align: center;
+  background: var(--ink); color: var(--frame);
   font-family: var(--font-mono); font-variation-settings: "MONO" 1;
-  font-size: .8rem; letter-spacing: .04em; color: var(--accent);
-  margin: -18px 0 28px;
+  font-size: .72rem; line-height: 1.3; letter-spacing: .04em; text-transform: uppercase;
+  animation: hint-flash 1.1s steps(1) infinite;
+  transition: opacity .2s ease;
 }
+@keyframes hint-flash { 50% { opacity: 0; } }
+.launchable:hover .launch-hint, .launchable:focus-visible .launch-hint { animation: none; opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .launch-hint { animation: none; } }
 .launchable .art svg { width: 55%; height: 55%; }
 .launchable .launch-label {
   position: absolute; inset: 0; display: grid; place-items: center;
@@ -289,7 +297,8 @@ img.pixel { width: 100%; height: 100%; object-fit: cover; image-rendering: pixel
 .launchable:hover, .launchable:focus-visible { box-shadow: 0 0 0 3px var(--accent); }
 @media (hover: none) {
   .launchable .art { border-width: 12px; }
-  .launchable .launch-label { opacity: 1; transform: none; inset: auto 0 0 0; place-items: end center; padding-bottom: 10px; font-size: 1rem; }
+  .launchable .launch-hint { left: 12px; right: 12px; bottom: 12px; font-size: .62rem; }
+  .launchable .launch-label { display: none; transform: none; inset: auto 0 0 0; place-items: end center; padding-bottom: 10px; font-size: 1rem; }
 }
 
 .specs {
@@ -566,6 +575,9 @@ const projects = [
 // ---------- Change log ----------
 // Newest first. Each update adds 0.01 to the version.
 const CHANGELOG = [
+  { v: "1.08", date: "2026-10-19", notes: [
+    "Launch prompt now flashes over the project art"
+  ]},
   { v: "1.07", date: "2026-10-19", notes: [
     "Launch art now blurs its border along with the image",
     "Added a note telling visitors they can click the image to launch"
@@ -644,10 +656,9 @@ function projectView(p) {
         <h1 class="page-title">${p.title}</h1>
         <p class="meta-line"><span>Project Type: <b>${p.type}</b></span><span>Status: <b>${p.status}</b></span></p>
         <p class="lede">${p.summary}</p>
-        ${p.launch ? `<p class="launch-hint">▸ Click the image to launch ${p.title}. It opens in a new tab.</p>` : ""}
       </div>
       ${p.launch
-        ? `<a class="icon-lg launchable${p.img ? " has-img" : ""}" href="${p.launch}" target="_blank" rel="noopener" aria-label="Launch ${p.title} (opens in a new tab)"><span class="art">${iconOf(p)}</span><span class="launch-label">Launch ↗</span></a>`
+        ? `<a class="icon-lg launchable${p.img ? " has-img" : ""}" href="${p.launch}" target="_blank" rel="noopener" aria-label="Launch ${p.title} (opens in a new tab)"><span class="art">${iconOf(p)}</span><span class="launch-label">Launch ↗</span><span class="launch-hint" aria-hidden="true">▸ Click to launch ${p.title}</span></a>`
         : `<div class="icon-lg${p.img ? " has-img" : ""}">${iconOf(p)}</div>`}
     </section>
     <dl class="specs">${specs}</dl>
