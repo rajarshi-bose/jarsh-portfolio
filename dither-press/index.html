@@ -18,8 +18,11 @@ body{background:var(--bg);color:var(--fg);font:700 15px/1.45 var(--body);padding
 header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
 h1{font:400 22px/1.2 var(--display);margin:0}
 header p{margin:0;color:var(--muted)}
-.home{margin-left:auto;color:var(--muted);text-decoration:none;font:700 14px var(--mono)}
-.home:hover{color:var(--accent)}
+/* Back to jarsh.us (top-left, in this page's colors) */
+@font-face{font-family:"Geist Pixel";src:url("../fonts/GeistPixel-Square.woff2") format("woff2");font-display:swap}
+.jarsh-home{display:inline-flex;align-items:center;font-family:"Geist Pixel",ui-monospace,Menlo,monospace;font-size:15px;line-height:1;letter-spacing:.02em;color:var(--muted);text-decoration:none;white-space:nowrap;transition:color .15s}
+.jarsh-home:hover,.jarsh-home:focus-visible{color:var(--accent)}
+header .jarsh-home{flex-basis:100%;margin-bottom:6px}
 .main{display:grid;grid-template-columns:372px minmax(0,1fr);gap:16px;align-items:start}
 @media (max-width:760px){.main{grid-template-columns:minmax(0,1fr)}}
 .panel{background:var(--panel);border:2px solid var(--line);border-radius:2px;overflow:hidden;display:flex;flex-direction:column}
@@ -57,9 +60,9 @@ canvas{max-width:100%;height:auto;image-rendering:pixelated;display:block;max-he
 
 <div class="wrap">
   <header>
+    <a class="jarsh-home" href="https://jarsh.us">&larr; jarsh.us</a>
     <h1>Dither Press</h1>
     <p>Drop in an image, pick a dither, save the print.</p>
-    <a class="home" href="https://jarsh.us">&larr; jarsh.us</a>
   </header>
   <div class="main">
     <form class="panel" id="controls" onsubmit="return false">
