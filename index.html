@@ -164,6 +164,8 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 .p-art .pa-go .ne { display: inline-block; }
 .p-art .pa-hint { position: absolute; left: 10px; right: 10px; bottom: 10px; padding: 7px 8px; background: var(--paper); color: var(--ink); text-align: center; font-size: .82rem; font-weight: 600; animation: hint 1.1s steps(1, end) infinite; }
 @keyframes hint { 50% { opacity: 0; } }
+.p-art .pa-hint { display: flex; align-items: center; justify-content: center; gap: .35em; }
+.p-art .pa-hint .tri { font-size: 1.6em; line-height: .6; }
 @media (hover: hover) and (pointer: fine) {
   .p-art .pa-img { transition: filter 420ms ease, transform 420ms ease; }
   .p-art .pa-veil { transition: opacity 380ms ease; }
@@ -451,7 +453,7 @@ function projectView(p) {
   const side = p.launch
     ? `<a class="p-art" href="${p.launch}" target="_blank" rel="noopener" aria-label="Launch ${esc(p.title)} (opens in a new tab)">${art}
          <span class="pa-veil" aria-hidden="true"><span class="pa-go">Launch<span class="ne">↗</span></span></span>
-         <span class="pa-hint" aria-hidden="true">Click to launch ↗</span></a>`
+         <span class="pa-hint" aria-hidden="true"><span class="tri">▸</span>Click to launch</span></a>`
     : `<div class="p-art" aria-hidden="true">${art}</div>`;
   return `
   <div class="page inner">
@@ -490,7 +492,7 @@ function artView() {
 
 // ---------- Change log (newest first; each update adds 0.01) ----------
 const CHANGELOG = [
-  { v: "1.21", date: "2026-10-22", notes: ["The flashing launch prompt now uses the same ↗ arrow as the hover state"] },
+  { v: "1.21", date: "2026-10-22", notes: ["Bigger triangle on the flashing launch prompt"] },
   { v: "1.20", date: "2026-10-22", notes: ["New Dither Press cover: a dithered cat"] },
   { v: "1.19", date: "2026-10-22", notes: ["Swiss redesign: one typeface, a 12-column grid, and a five-across project grid", "Titles animate in letter by letter; project names roll to red on hover", "Hovering a project fades in its summary over the art", "Blinking red dot for projects in progress, green for complete"] },
   { v: "1.18", date: "2026-10-21", notes: ["All apps are back under jarsh.us: /ten-year-tape, /dither-press and /isle-of-man"] },
