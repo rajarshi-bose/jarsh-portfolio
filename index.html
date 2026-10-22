@@ -451,7 +451,7 @@ function projectView(p) {
   const side = p.launch
     ? `<a class="p-art" href="${p.launch}" target="_blank" rel="noopener" aria-label="Launch ${esc(p.title)} (opens in a new tab)">${art}
          <span class="pa-veil" aria-hidden="true"><span class="pa-go">Launch<span class="ne">↗</span></span></span>
-         <span class="pa-hint" aria-hidden="true">▸ Click to launch</span></a>`
+         <span class="pa-hint" aria-hidden="true">Click to launch ↗</span></a>`
     : `<div class="p-art" aria-hidden="true">${art}</div>`;
   return `
   <div class="page inner">
@@ -490,6 +490,7 @@ function artView() {
 
 // ---------- Change log (newest first; each update adds 0.01) ----------
 const CHANGELOG = [
+  { v: "1.21", date: "2026-10-22", notes: ["The flashing launch prompt now uses the same ↗ arrow as the hover state"] },
   { v: "1.20", date: "2026-10-22", notes: ["New Dither Press cover: a dithered cat"] },
   { v: "1.19", date: "2026-10-22", notes: ["Swiss redesign: one typeface, a 12-column grid, and a five-across project grid", "Titles animate in letter by letter; project names roll to red on hover", "Hovering a project fades in its summary over the art", "Blinking red dot for projects in progress, green for complete"] },
   { v: "1.18", date: "2026-10-21", notes: ["All apps are back under jarsh.us: /ten-year-tape, /dither-press and /isle-of-man"] },
