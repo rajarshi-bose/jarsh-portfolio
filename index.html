@@ -448,7 +448,7 @@ const projects = [
   { id: "dither-press", tags: ["tool", "web development", "image processing", "pixel art", "end to end"], months: "Oct", year: 2026, title: "Dither Press", field: "Tool", status: "Complete", img: IMG.dp, smooth: true, launch: "https://jarsh.us/dither-press/",
     summary: "Turns any image into a dithered print, with 13 dither methods, retro palettes, and high-resolution export.",
     facts: { Category: "Image dithering", Methods: "13", Role: "Designer & developer" }, text: [] },
-  { id: "food-plotter", tags: ["tool", "web development", "data visualization", "3d"], months: "Oct – Present", year: 2026, title: "Food Plotter", field: "Tool", status: "In progress", img: IMG.fp, smooth: true, launch: "https://jarsh.us/food-plotter/",
+  { id: "food-plotter", tags: ["tool", "web development", "data visualization", "3d"], months: "Oct – Present", year: 2026, title: "Food Plotter", field: "Tool", status: "In progress", img: IMG.fp, launch: "https://jarsh.us/food-plotter/",
     summary: "Plot foods in a rotatable 3D space by cost, portion size, and taste.",
     facts: { Axes: "Cost, portion, taste", Saving: "In your browser", Role: "Designer & developer" }, text: [] }
 ];
@@ -587,6 +587,7 @@ function artView() {
 
 // ---------- Change log (newest first; each update adds 0.01) ----------
 const CHANGELOG = [
+  { v: "1.30", date: "2026-10-22", notes: ["New pixel hot dog cover for Food Plotter"] },
   { v: "1.29", date: "2026-10-22", notes: ["Food Plotter now loads from its own GitHub repo, like the other apps"] },
   { v: "1.28", date: "2026-10-22", notes: ["Food Plotter 1.3: version number and Fixes log in its bottom-right corner"] },
   { v: "1.27", date: "2026-10-22", notes: ["Added Food Plotter, live at jarsh.us/food-plotter"] },
