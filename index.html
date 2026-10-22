@@ -54,12 +54,12 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 
 /* ---------- Letter machinery ---------- */
 .word { display: inline-block; white-space: nowrap; }
-.ch { display: inline-block; position: relative; overflow: hidden; vertical-align: top; padding-bottom: .08em; margin-bottom: -.08em; }
+.ch { display: inline-block; position: relative; vertical-align: top; padding-bottom: .25em; margin-bottom: -.25em; clip-path: inset(-0.4em -0.3em 0 -0.3em); }
 .ch > span { display: block; }
 .ch > .roll { display: flex; flex-direction: column; gap: .3em; }
 .roll > span { display: block; line-height: 1.12; }
 .roll > .b { color: var(--signal); }
-.ch.tw { padding-bottom: 0; margin-bottom: 0; line-height: 1.12; height: 1.12em; }
+.ch.tw { padding-bottom: 0; margin-bottom: 0; line-height: 1.12; height: 1.12em; clip-path: inset(0 -0.3em); }
 
 /* Hero intro: letters rise into place once, on load */
 .hero h1 {
@@ -67,8 +67,7 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
   font-size: clamp(4.2rem, 17.5vw, 19rem);
   margin: clamp(32px, 6vw, 80px) 0 0 -0.04em;
 }
-.hero h1 .ch { padding-bottom: .1em; margin-bottom: -.1em; }
-.intro .ch > .a { transform: translateY(105%); }
+.intro .ch > .a { transform: translateY(140%); }
 .intro.go .ch > .a { transform: none; transition: transform 1000ms var(--ease-out); transition-delay: calc(var(--i) * 38ms); }
 
 .lede-row { margin-top: clamp(28px, 4vw, 56px); padding-top: 14px; border-top: 2px solid var(--rule); row-gap: 24px; }
@@ -113,14 +112,17 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 @keyframes blink { 50% { opacity: .15; } }
 
 .tiles { margin-top: 24px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); column-gap: var(--gutter); row-gap: clamp(36px, 4vw, 56px); }
-.tile { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.tile { display: block; min-width: 0; }
+.tile-in { display: flex; flex-direction: column; gap: 12px; }
+.tile.sliding { clip-path: inset(0); }
 .tile .art { position: relative; aspect-ratio: 1; max-width: 100%; overflow: hidden; background: var(--ink); color: var(--paper); display: grid; place-items: center; }
 .tile .art > svg { width: 68%; height: 68%; }
 .tile .art > img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; display: block; }
-.tile .art > svg, .tile .art > img { transition: filter 420ms ease, transform 420ms ease; }
+.tile .art > svg, .tile .art > img { transition: transform 420ms ease; }
 .tile .reveal {
   position: absolute; inset: 0; color: #000;
   background: color-mix(in srgb, var(--signal) 88%, transparent);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
   display: flex; flex-direction: column; gap: 10px; padding: clamp(12px, 1.3vw, 18px);
   opacity: 0;
 }
@@ -145,7 +147,7 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
   .tile:hover .reveal, .tile:focus-visible .reveal { opacity: 1; }
   .tile:hover .reveal p, .tile:focus-visible .reveal p { transform: none; filter: none; }
   .tile:hover .reveal span, .tile:focus-visible .reveal span { opacity: 1; }
-  .tile:hover .art > svg, .tile:hover .art > img, .tile:focus-visible .art > svg, .tile:focus-visible .art > img { filter: blur(10px); transform: scale(1.04); }
+  .tile:hover .art > svg, .tile:hover .art > img, .tile:focus-visible .art > svg, .tile:focus-visible .art > img { transform: scale(1.04); }
   .tile .name .roll { transition: transform 420ms var(--ease-roll); transition-delay: calc(var(--i) * 14ms); }
   .tile:hover .name .roll, .tile:focus-visible .name .roll { transform: translateY(-1.42em); }
   .tile .field { transition: color 150ms ease; }
@@ -186,7 +188,7 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 .p-art .pa-img svg { width: 66%; height: 66%; }
 .p-art .pa-img img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; display: block; }
 .tile .art > img.smooth, .p-art .pa-img img.smooth { image-rendering: auto; }
-.p-art .pa-veil { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; background: color-mix(in srgb, var(--signal) 88%, transparent); color: #000; }
+.p-art .pa-veil { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; background: color-mix(in srgb, var(--signal) 88%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); color: #000; }
 .p-art .pa-go { font-size: clamp(1.4rem, 2.4vw, 2rem); font-weight: 800; letter-spacing: -0.03em; display: inline-flex; gap: .25em; filter: blur(4px); transform: translateY(6px); }
 .p-art .pa-go .ne { display: inline-block; }
 .p-art .pa-hint { position: absolute; left: 10px; right: 10px; bottom: 10px; padding: 7px 8px; background: var(--paper); color: var(--ink); text-align: center; font-size: .82rem; font-weight: 600; animation: hint 1.1s steps(1, end) infinite; }
@@ -194,12 +196,12 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 .p-art .pa-hint { display: flex; align-items: center; justify-content: center; gap: .35em; }
 .p-art .pa-hint .tri { font-size: 1.6em; line-height: .6; }
 @media (hover: hover) and (pointer: fine) {
-  .p-art .pa-img { transition: filter 420ms ease, transform 420ms ease; }
+  .p-art .pa-img { transition: transform 420ms ease; }
   .p-art .pa-veil { transition: opacity 380ms ease; }
   .p-art .pa-go { transition: filter 480ms var(--ease-out) 60ms, transform 480ms var(--ease-out) 60ms; }
   .p-art .pa-go .ne { transition: transform 260ms var(--ease-out) 200ms; }
   .p-art .pa-hint { transition: opacity 150ms ease; }
-  a.p-art:hover .pa-img, a.p-art:focus-visible .pa-img { filter: blur(10px); transform: scale(1.05); }
+  a.p-art:hover .pa-img, a.p-art:focus-visible .pa-img { transform: scale(1.05); }
   a.p-art:hover .pa-veil, a.p-art:focus-visible .pa-veil { opacity: 1; }
   a.p-art:hover .pa-go, a.p-art:focus-visible .pa-go { filter: none; transform: none; }
   a.p-art:hover .pa-go .ne, a.p-art:focus-visible .pa-go .ne { transform: translate(3px, -3px); }
@@ -461,7 +463,7 @@ function projectTypes() {
 }
 function tileHTML(p, opts = {}) {
   return `
-    <a class="tile" href="#${p.id}" data-route="${p.id}" data-type="${p.field}"${opts.hidden ? " hidden" : ""}>
+    <a class="tile" href="#${p.id}" data-route="${p.id}" data-type="${p.field}"${opts.hidden ? " hidden" : ""}><span class="tile-in">
       <span class="art">${p.img ? `<img src="${p.img}" alt=""${p.smooth ? ' class="smooth"' : ""}>` : icons[p.icon]}
         <span class="reveal" aria-hidden="true"><p>${p.summary}</p><span>Read more</span></span>
       </span>
@@ -472,7 +474,7 @@ function tileHTML(p, opts = {}) {
         <span class="field">${opts.shared ? `<span class="shared">${opts.shared.map(esc).join(", ")}</span>` : p.field}</span>
       </span>
       <span class="sum">${p.summary}</span>
-    </a>`;
+    </span></a>`;
 }
 let currentType = "";
 function homeView() {
@@ -574,6 +576,7 @@ function artView() {
 
 // ---------- Change log (newest first; each update adds 0.01) ----------
 const CHANGELOG = [
+  { v: "1.24", date: "2026-10-22", notes: ["Filtering now slides projects up and out, then slides the filtered set up into place", "Large titles no longer clip the edges of letters", "No more edge showing when you hover off a project"] },
   { v: "1.23", date: "2026-10-22", notes: ["Filtering now fades hidden projects to black and slides the rest into place", "New black type menu", "Keywords on every project page", "Related projects bar at the bottom of each project page"] },
   { v: "1.22", date: "2026-10-22", notes: ["New bio and title on the home page", "Filter projects by type from the projects bar", "Each project now shows its month range", "Added UL-1 Fluids; N₂O feed project renamed to Lumina Fluids Bay", "Removed Launch Vehicle Qualification and Bayesian Calibration"] },
   { v: "1.21", date: "2026-10-22", notes: ["Bigger triangle on the flashing launch prompt"] },
@@ -614,34 +617,29 @@ function applyFilter(t) {
   const grid = document.getElementById("homeTiles"); if (!grid) return;
   const tiles = [...grid.querySelectorAll(".tile")];
   const match = (el) => !t || el.dataset.type === t;
-  document.getElementById("pcount").textContent = tiles.filter(match).length;
-  tiles.forEach(el => el.getAnimations().forEach(an => an.cancel()));
-  if (reduceMotion) { tiles.forEach(el => { el.hidden = !match(el); }); return; }
+  const inner = (el) => el.querySelector(".tile-in");
+  const setCount = () => { document.getElementById("pcount").textContent = tiles.filter(match).length; };
+  tiles.forEach(el => { inner(el).getAnimations().forEach(an => an.cancel()); el.classList.remove("sliding"); });
+  if (reduceMotion) { tiles.forEach(el => { el.hidden = !match(el); }); setCount(); return; }
   const run = ++filterRun;
-  const leaving = tiles.filter(el => !el.hidden && !match(el));
-  const entering = tiles.filter(el => el.hidden && match(el));
-  const staying = tiles.filter(el => !el.hidden && match(el));
-  // 1. tiles that don't match go dark, then disappear
-  const outs = leaving.map(el => el.animate(
-    [{ filter: "brightness(1)", opacity: 1, easing: "ease-out" }, { filter: "brightness(0)", opacity: 1, offset: .45 },
-     { filter: "brightness(0)", opacity: 1, offset: .7, easing: "ease-in" }, { filter: "brightness(0)", opacity: 0 }],
-    { duration: 560, fill: "forwards" }).finished.catch(() => {}));
+  const roll = "cubic-bezier(0.645, 0.045, 0.355, 1)", settle = "cubic-bezier(0.19, 1, 0.22, 1)";
+  // 1. every visible tile slides up and out of its slot, left to right
+  const outs = tiles.filter(el => !el.hidden).map((el, i) => {
+    el.classList.add("sliding");
+    return inner(el).animate([{ transform: "translateY(0)" }, { transform: "translateY(-102%)" }],
+      { duration: 380, easing: roll, delay: i * 30, fill: "forwards" }).finished.catch(() => {});
+  });
   Promise.all(outs).then(() => {
     if (run !== filterRun) return;
-    // 2. remember where the remaining tiles were, reflow, then slide them from there
-    const first = new Map(staying.map(el => [el, el.getBoundingClientRect()]));
-    leaving.forEach(el => { el.hidden = true; el.getAnimations().forEach(an => an.cancel()); });
-    entering.forEach(el => { el.hidden = false; });
-    staying.forEach((el, i) => {
-      const a = first.get(el), b = el.getBoundingClientRect();
-      const dx = a.left - b.left, dy = a.top - b.top;
-      if (dx || dy) el.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }],
-        { duration: 560, easing: "cubic-bezier(0.645, 0.045, 0.355, 1)", delay: i * 35 });
+    // 2. swap in the filtered set, then slide each tile up into place
+    setCount();
+    tiles.forEach(el => { el.hidden = !match(el); inner(el).getAnimations().forEach(an => an.cancel()); el.classList.remove("sliding"); });
+    tiles.filter(match).forEach((el, i) => {
+      el.classList.add("sliding");
+      const an = inner(el).animate([{ transform: "translateY(102%)" }, { transform: "translateY(0)" }],
+        { duration: 700, easing: settle, delay: 60 + i * 55, fill: "backwards" });
+      an.finished.then(() => el.classList.remove("sliding")).catch(() => {});
     });
-    // 3. newly matching tiles come up out of black
-    entering.forEach((el, i) => el.animate(
-      [{ filter: "brightness(0)", opacity: 0 }, { filter: "brightness(0)", opacity: 1, offset: .35 }, { filter: "brightness(1)", opacity: 1 }],
-      { duration: 560, easing: "ease-out", delay: 140 + i * 45, fill: "backwards" }));
   });
 }
 
