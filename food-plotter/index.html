@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Food Plotter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@700&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Schibsted+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f2e8;
+    --ink: #1d1b26;
+    --muted: #7a7466;
+    --line: #e2dccd;
+    --blue: #2a4fd6;    /* cobalt */
+    --green: #189a6c;   /* jade */
+    --yellow: #f0a800;  /* saffron */
+    --red: #ec5a3a;     /* tomato */
+    --bar-h: 58px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Schibsted Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    overflow: hidden;
+  }
+
+  /* soft colored blobs so the translucent sheet has something to blur */
+  .blobs { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .blobs span { position: absolute; border-radius: 50%; filter: blur(80px); opacity: .22; }
+  .blobs span:nth-child(1) { width: 380px; height: 380px; background: var(--blue);   left: -80px;  top: 12%; }
+  .blobs span:nth-child(2) { width: 420px; height: 420px; background: var(--yellow); right: -100px; top: -60px; }
+  .blobs span:nth-child(3) { width: 360px; height: 360px; background: var(--green);  right: 15%;  bottom: -120px; }
+  .blobs span:nth-child(4) { width: 300px; height: 300px; background: var(--red);    left: 28%;  bottom: -110px; }
+
+  /* ---------- top bar ---------- */
+  .bar {
+    position: fixed; top: 0; left: 0; right: 0; height: var(--bar-h);
+    display: flex; align-items: center; gap: 14px;
+    padding: 0 18px;
+    background: rgba(255, 255, 255, .72);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    z-index: 10;
+  }
+  .jarsh-home {
+    --jh-color: #1d1b26;  /* Food Plotter main text color */
+    --jh-hover: #2a4fd6;  /* Food Plotter accent color */
+    display: inline-flex; align-items: center; gap: 8px;
+    font: 700 16px/1 "Schibsted Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    letter-spacing: -.01em;
+    color: var(--jh-color); text-decoration: none; white-space: nowrap;
+    transition: color .15s;
+  }
+  .jarsh-home svg { width: 14px; height: 17px; flex: none; transition: transform .2s cubic-bezier(.19, 1, .22, 1); }
+  .jarsh-home:hover, .jarsh-home:focus-visible { color: var(--jh-hover); }
+  .jarsh-home:hover svg, .jarsh-home:focus-visible svg { transform: translateY(-2px); }
+  @media (prefers-reduced-motion: reduce) { .jarsh-home, .jarsh-home svg { transition: none; } }
+  .divider { width: 2px; height: 26px; background: var(--line); border-radius: 2px; }
+  .title-slot {
+    font-family: Silkscreen, monospace;
+    font-size: 22px;
+    letter-spacing: .04em;
+    white-space: pre;
+    visibility: hidden;
+  }
+
+  /* ---------- intro sheet ---------- */
+  .sheet {
+    position: fixed; inset: 0; z-index: 20;
+    background: rgba(246, 242, 232, .55);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: opacity .8s ease;
+  }
+  .sheet.gone { opacity: 0; pointer-events: none; }
+  .intro-title {
+    position: fixed; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    transform-origin: top left;
+    font-family: Silkscreen, monospace;
+    font-size: clamp(40px, 9vw, 110px);
+    letter-spacing: .04em;
+    white-space: pre;
+    z-index: 30;
+    user-select: none;
+  }
+  .intro-title span, .title-slot span { display: inline-block; }
+  .intro-title span.locked { animation: pop .25s ease-out; }
+  @keyframes pop { 0% { transform: scale(1.35); } 100% { transform: scale(1); } }
+
+  /* ---------- layout ---------- */
+  main {
+    position: fixed; top: var(--bar-h); left: 0; right: 0; bottom: 0;
+    display: flex; align-items: center; justify-content: center;
+    gap: 24px; padding: 24px;
+    z-index: 1;
+  }
+  .card {
+    background: rgba(255, 255, 255, .85);
+    border: 2px solid var(--ink);
+    border-radius: 18px;
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .plot-card {
+    position: relative;
+    flex: 1 1 auto;
+    max-width: 820px;
+    height: min(100%, 680px);
+    overflow: hidden;
+  }
+  canvas { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+  canvas.dragging { cursor: grabbing; }
+  .hint {
+    position: absolute; left: 14px; bottom: 12px;
+    font-size: 12px; color: var(--muted);
+    pointer-events: none;
+  }
+
+  /* ---------- side panel ---------- */
+  .panel {
+    flex: 0 0 280px;
+    height: min(100%, 680px);
+    display: flex; flex-direction: column;
+    padding: 18px;
+    gap: 14px;
+    overflow: hidden;
+  }
+  .add-btn {
+    font-family: Silkscreen, monospace;
+    font-size: 15px;
+    padding: 12px;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    background: var(--blue);
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--ink);
+    transition: transform .12s, box-shadow .12s;
+  }
+  .add-btn:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+  .add-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+
+  .add-form {
+    display: flex; flex-direction: column; gap: 12px;
+    padding: 14px;
+    border: 2px dashed var(--line);
+    border-radius: 12px;
+  }
+  .add-form[hidden] { display: none; }
+  .field { display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; }
+  .field input[type="text"] {
+    font: inherit; font-weight: 400;
+    padding: 8px 10px;
+    border: 2px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    outline: none;
+  }
+  .field input[type="text"]:focus { border-color: var(--blue); }
+  .field input[type="text"].bad { border-color: var(--red); }
+  .slider-head { display: flex; justify-content: space-between; }
+  .slider-head output { font-variant-numeric: tabular-nums; }
+  .field input[type="range"] { width: 100%; }
+  .f-cost    { accent-color: var(--green); }
+  .f-portion { accent-color: var(--yellow); }
+  .f-taste   { accent-color: var(--red); }
+
+  .form-actions { display: flex; gap: 8px; }
+  .form-actions button {
+    flex: 1;
+    font: 600 13px "Schibsted Grotesk", sans-serif;
+    padding: 9px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .btn-cancel { background: #fff; border: 2px solid var(--line); color: var(--muted); }
+  .btn-save   { background: var(--green); border: 2px solid var(--ink); color: #fff; }
+
+  .list-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: Silkscreen, monospace; font-size: 13px;
+    padding-top: 4px;
+    border-top: 1px solid var(--line);
+  }
+  .list-head span { font-family: "Schibsted Grotesk", sans-serif; color: var(--muted); font-size: 12px; }
+  .list { list-style: none; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .list li {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 8px 7px 10px;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid var(--line);
+    font-size: 13px;
+  }
+  .list li.active { border-color: var(--blue); }
+  .list .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--blue); flex: none; }
+  .list .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+  .list .vals { color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .list .del {
+    border: none; background: none; cursor: pointer;
+    color: var(--muted); font-size: 16px; line-height: 1; padding: 2px 4px;
+  }
+  .list .del:hover { color: var(--red); }
+  .empty { color: var(--muted); font-size: 13px; text-align: center; padding: 14px 0; }
+
+  @media (max-width: 760px) {
+    body { overflow: auto; }
+    main {
+      position: static; margin-top: var(--bar-h);
+      flex-direction: column; align-items: stretch;
+      padding: 16px; gap: 20px;
+    }
+    .plot-card { height: 60vh; max-width: none; flex: none; }
+    .panel { flex: none; height: auto; max-height: none; }
+    .title-slot { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="blobs"><span></span><span></span><span></span><span></span></div>
+
+<header class="bar">
+  <a class="jarsh-home" href="https://jarsh.us" aria-label="Back to jarsh.us">
+    <svg viewBox="2 1 12 14" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+      <path d="M3 1H5V3H6V2H7V1H9V2H10V3H11V4H12V5H13V6H14V15H2V6H3Z"/>
+    </svg>
+    <span>jarsh.us</span>
+  </a>
+  <div class="divider"></div>
+  <div class="title-slot" id="titleSlot"></div>
+</header>
+
+<main>
+  <div class="card plot-card">
+    <canvas id="plot"></canvas>
+    <div class="hint">Drag to rotate · scroll to zoom · double-click to reset</div>
+  </div>
+
+  <aside class="card panel">
+    <button class="add-btn" id="addBtn">+ Add point</button>
+
+    <div class="add-form" id="addForm" hidden>
+      <label class="field">Food
+        <input type="text" id="fName" maxlength="40" placeholder="e.g. Chipotle bowl">
+      </label>
+      <label class="field f-cost">
+        <span class="slider-head">Cost <output id="oCost">5</output></span>
+        <input type="range" id="fCost" min="0" max="10" step="0.5" value="5">
+      </label>
+      <label class="field f-portion">
+        <span class="slider-head">Portion Size <output id="oPortion">5</output></span>
+        <input type="range" id="fPortion" min="0" max="10" step="0.5" value="5">
+      </label>
+      <label class="field f-taste">
+        <span class="slider-head">Taste <output id="oTaste">5</output></span>
+        <input type="range" id="fTaste" min="0" max="10" step="0.5" value="5">
+      </label>
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
+        <button type="button" class="btn-save" id="saveBtn">Add</button>
+      </div>
+    </div>
+
+    <div class="list-head">Foods <span id="count">0</span></div>
+    <ul class="list" id="list"></ul>
+  </aside>
+</main>
+
+<div class="sheet" id="sheet"></div>
+<div class="intro-title" id="introTitle"></div>
+
+<script>
+/* =========================================================
+   1. Intro: scrambled characters lock in one by one,
+      then the title glides into the top bar.
+   ========================================================= */
+const TEXT = "Food Plotter";
+const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&*+=?@!<>";
+const PALETTE = ["#2a4fd6", "#189a6c", "#f0a800", "#ec5a3a"];
+const rand = arr => arr[Math.floor(Math.random() * arr.length)];
+
+const intro = document.getElementById("introTitle");
+const slot = document.getElementById("titleSlot");
+const sheet = document.getElementById("sheet");
+
+// hand-picked, non-repeating order so it doesn't read as a 4-color logo cycle
+const [B, G, Y, R] = PALETTE;
+const LETTER_COLORS = [B, Y, G, R, null, G, B, R, Y, B, G, R];
+const finalColors = [...TEXT].map((ch, i) => ch === " " ? null : LETTER_COLORS[i]);
+
+const spans = [...TEXT].map(ch => {
+  const s = document.createElement("span");
+  s.textContent = ch === " " ? " " : rand(GLYPHS);
+  intro.appendChild(s);
+  return s;
+});
+
+[...TEXT].forEach((ch, i) => {
+  const s = document.createElement("span");
+  s.textContent = ch;
+  if (finalColors[i]) s.style.color = finalColors[i];
+  slot.appendChild(s);
+});
+
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function runScramble() {
+  return new Promise(resolve => {
+    let lockedCount = 0;
+    const lockable = [...TEXT].map((c, i) => i).filter(i => TEXT[i] !== " ");
+
+    const flicker = setInterval(() => {
+      spans.forEach((s, i) => {
+        if (TEXT[i] === " " || s.classList.contains("locked")) return;
+        s.textContent = rand(GLYPHS);
+        s.style.color = rand(PALETTE);
+      });
+    }, 45);
+
+    const startDelay = reduceMotion ? 0 : 600;
+    const step = reduceMotion ? 0 : 120;
+
+    setTimeout(function lockNext() {
+      const i = lockable[lockedCount];
+      spans[i].textContent = TEXT[i];
+      spans[i].style.color = finalColors[i];
+      spans[i].classList.add("locked");
+      lockedCount++;
+      if (lockedCount < lockable.length) {
+        setTimeout(lockNext, step);
+      } else {
+        clearInterval(flicker);
+        setTimeout(resolve, reduceMotion ? 0 : 450);
+      }
+    }, startDelay);
+  });
+}
+
+function moveToBar() {
+  return new Promise(resolve => {
+    const a = intro.getBoundingClientRect();
+    const b = slot.getBoundingClientRect();
+
+    intro.style.left = a.left + "px";
+    intro.style.top = a.top + "px";
+    intro.style.transform = "none";
+    void intro.offsetWidth;
+
+    const scale = b.width / a.width;
+    const dx = b.left - a.left;
+    const dy = b.top - a.top;
+    const dur = reduceMotion ? 0 : 900;
+
+    intro.style.transition = `transform ${dur}ms cubic-bezier(.65, 0, .25, 1)`;
+    intro.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+    sheet.classList.add("gone");
+
+    setTimeout(() => {
+      slot.style.visibility = "visible";
+      intro.remove();
+      setTimeout(() => sheet.remove(), 300);
+      resolve();
+    }, dur + 20);
+  });
+}
+
+// canvas text doesn't trigger web-font loading, so request the weights it uses
+try { ["400 12px", "600 12px", "700 14px"].forEach(f => document.fonts.load(f + " 'Schibsted Grotesk'")); } catch (e) {}
+
+(async () => {
+  try { await document.fonts.ready; } catch (e) {}
+  await runScramble();
+  await moveToBar();
+})();
+
+/* =========================================================
+   2. Saved points (kept in this browser's localStorage)
+   ========================================================= */
+const STORE_KEY = "foodPlotter.points.v1";
+
+function loadPoints() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) { return []; }
+}
+function savePoints() {
+  // if storage is blocked (private mode, sandboxed preview), points still live for this visit
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(points)); } catch (e) {}
+}
+
+let points = loadPoints();
+let activeId = null;
+
+/* =========================================================
+   3. 3D plotter (plain canvas, no libraries)
+      x = Cost, y = Taste (vertical), z = Portion Size
+      Cube spans -1..1; values 0..10 map onto it.
+   ========================================================= */
+const canvas = document.getElementById("plot");
+const ctx = canvas.getContext("2d");
+
+const AXES = {
+  x: { name: "Cost",         color: "#189a6c" },
+  y: { name: "Taste",        color: "#ec5a3a" },
+  z: { name: "Portion Size", color: "#d08f00" },
+};
+const POINT_COLOR = "#2a4fd6";
+const TICKS = 5;
+
+// Rotation is limited to one quadrant so the back walls never flip.
+// Walls sit at x = -1, z = -1 and the floor at y = -1.
+const YAW_MIN = -Math.PI / 2 + 0.12, YAW_MAX = -0.12;
+const PITCH_MIN = 0.08, PITCH_MAX = 1.3;
+const DEFAULT_VIEW = { yaw: -0.75, pitch: 0.42, zoom: 1 };
+let view = { ...DEFAULT_VIEW };
+let vel = { yaw: 0, pitch: 0 };
+
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const toCube = v => -1 + v / 5;
+
+let W = 0, H = 0;
+function resize() {
+  const dpr = window.devicePixelRatio || 1;
+  const r = canvas.getBoundingClientRect();
+  W = r.width; H = r.height;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+window.addEventListener("resize", resize);
+resize();
+
+function rotate([x, y, z]) {
+  const cy = Math.cos(view.yaw), sy = Math.sin(view.yaw);
+  const cp = Math.cos(view.pitch), sp = Math.sin(view.pitch);
+  const x1 = x * cy + z * sy;
+  const z1 = -x * sy + z * cy;
+  const y2 = y * cp - z1 * sp;
+  const z2 = y * sp + z1 * cp;
+  return [x1, y2, z2];
+}
+
+function project(p) {
+  const [x, y, z] = rotate(p);
+  const D = 6;
+  const base = Math.min(W, H) * 0.24 * view.zoom;
+  const s = base * D / (D - z);
+  return { x: W / 2 + x * s, y: H / 2 - 6 - y * s, depth: z, s };
+}
+
+function line(a, b, color, width = 1, dash = null) {
+  const p = project(a), q = project(b);
+  ctx.beginPath();
+  ctx.moveTo(p.x, p.y);
+  ctx.lineTo(q.x, q.y);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.setLineDash(dash || []);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function label(pt, text, color, font = "12px 'Schibsted Grotesk'", align = "center", dx = 0) {
+  const p = project(pt);
+  ctx.font = font;
+  ctx.fillStyle = color;
+  ctx.textAlign = align;
+  ctx.textBaseline = "middle";
+  ctx.fillText(text, p.x + dx, p.y);
+}
+
+function fillPlane(pts, color) {
+  ctx.beginPath();
+  pts.map(project).forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+
+function drawGrid() {
+  const grid = "rgba(29, 27, 38, 0.08)";
+  const frame = "rgba(29, 27, 38, 0.22)";
+
+  fillPlane([[-1, -1, -1], [1, -1, -1], [1, -1, 1], [-1, -1, 1]], "rgba(24, 154, 108, 0.05)");
+  fillPlane([[-1, -1, -1], [-1, 1, -1], [-1, 1, 1], [-1, -1, 1]], "rgba(240, 168, 0, 0.06)");
+  fillPlane([[-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1]], "rgba(42, 79, 214, 0.04)");
+
+  for (let i = 0; i <= TICKS; i++) {
+    const t = -1 + (2 * i) / TICKS;
+    const c = (i === 0 || i === TICKS) ? frame : grid;
+    line([t, -1, -1], [t, -1, 1], c);   // floor
+    line([-1, -1, t], [1, -1, t], c);
+    line([-1, t, -1], [-1, t, 1], c);   // side wall
+    line([-1, -1, t], [-1, 1, t], c);
+    line([t, -1, -1], [t, 1, -1], c);   // back wall
+    line([-1, t, -1], [1, t, -1], c);
+  }
+}
+
+function drawAxes() {
+  const pad = 0.16;
+  line([-1, -1, 1], [1, -1, 1], AXES.x.color, 3);    // Cost: front floor edge
+  line([1, -1, -1], [1, -1, 1], AXES.z.color, 3);    // Portion: other front floor edge
+  line([-1, -1, -1], [-1, 1, -1], AXES.y.color, 3);  // Taste: back corner
+
+  ctx.globalAlpha = 0.8;
+  for (let i = 0; i <= TICKS; i++) {
+    const t = -1 + (2 * i) / TICKS;
+    const v = String((i * 10) / TICKS);
+    label([t, -1.02, 1 + pad], v, AXES.x.color, "11px 'Schibsted Grotesk'");
+    label([1 + pad, -1.02, t], v, AXES.z.color, "11px 'Schibsted Grotesk'");
+    label([-1 - pad * 0.8, t, -1 - pad * 0.8], v, AXES.y.color, "11px 'Schibsted Grotesk'");
+  }
+  ctx.globalAlpha = 1;
+
+  const title = "700 14px 'Schibsted Grotesk'";
+  label([0, -1.08, 1.6], AXES.x.name, AXES.x.color, title);
+  label([1.6, -1.08, 0], AXES.z.name, AXES.z.color, title);
+  label([-1, 1.22, -1], AXES.y.name, AXES.y.color, title);
+}
+
+function drawPoints() {
+  const drawn = points.map(p => {
+    const pos = [toCube(p.cost), toCube(p.taste), toCube(p.portion)];
+    return { p, pos, scr: project(pos) };
+  }).sort((a, b) => a.scr.depth - b.scr.depth); // far ones first
+
+  // drop lines to the floor
+  drawn.forEach(({ pos }) => {
+    line(pos, [pos[0], -1, pos[2]], "rgba(42, 79, 214, 0.35)", 1, [3, 3]);
+    const f = project([pos[0], -1, pos[2]]);
+    ctx.beginPath();
+    ctx.ellipse(f.x, f.y, 4, 2, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(42, 79, 214, 0.25)";
+    ctx.fill();
+  });
+
+  drawn.forEach(({ p, scr }) => {
+    const active = p.id === activeId;
+    const r = (active ? 9 : 7) * view.zoom * (scr.s / (Math.min(W, H) * 0.24 * view.zoom));
+    const g = ctx.createRadialGradient(scr.x - r * 0.35, scr.y - r * 0.35, r * 0.1, scr.x, scr.y, r);
+    g.addColorStop(0, "#8fa6f0");
+    g.addColorStop(1, POINT_COLOR);
+    ctx.beginPath();
+    ctx.arc(scr.x, scr.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = g;
+    ctx.fill();
+    ctx.lineWidth = active ? 2.5 : 1.5;
+    ctx.strokeStyle = "#1d1b26";
+    ctx.stroke();
+
+    ctx.font = (active ? "700 " : "600 ") + "12px 'Schibsted Grotesk'";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "rgba(255,255,255,.9)";
+    ctx.strokeText(p.name, scr.x + r + 5, scr.y);
+    ctx.fillStyle = "#1d1b26";
+    ctx.fillText(p.name, scr.x + r + 5, scr.y);
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  drawGrid();
+  drawAxes();
+  drawPoints();
+}
+
+/* ---------- rotation / zoom ---------- */
+let dragging = false, last = null;
+
+canvas.addEventListener("pointerdown", e => {
+  dragging = true;
+  last = { x: e.clientX, y: e.clientY };
+  vel = { yaw: 0, pitch: 0 };
+  canvas.setPointerCapture(e.pointerId);
+  canvas.classList.add("dragging");
+});
+
+canvas.addEventListener("pointermove", e => {
+  if (!dragging) return;
+  const k = 0.008;
+  const dx = (e.clientX - last.x) * k;
+  const dy = (e.clientY - last.y) * k;
+  view.yaw = clamp(view.yaw + dx, YAW_MIN, YAW_MAX);
+  view.pitch = clamp(view.pitch + dy, PITCH_MIN, PITCH_MAX);
+  vel = { yaw: dx, pitch: dy };
+  last = { x: e.clientX, y: e.clientY };
+});
+
+const endDrag = () => { dragging = false; canvas.classList.remove("dragging"); };
+canvas.addEventListener("pointerup", endDrag);
+canvas.addEventListener("pointercancel", endDrag);
+
+canvas.addEventListener("wheel", e => {
+  e.preventDefault();
+  view.zoom = clamp(view.zoom * Math.exp(-e.deltaY * 0.0012), 0.55, 2.2);
+}, { passive: false });
+
+canvas.addEventListener("dblclick", () => {
+  view = { ...DEFAULT_VIEW };
+  vel = { yaw: 0, pitch: 0 };
+});
+
+function tick() {
+  if (!dragging && (vel.yaw || vel.pitch)) {
+    view.yaw = clamp(view.yaw + vel.yaw, YAW_MIN, YAW_MAX);
+    view.pitch = clamp(view.pitch + vel.pitch, PITCH_MIN, PITCH_MAX);
+    // stop momentum when it hits a limit, so it doesn't push against the edge
+    if (view.yaw === YAW_MIN || view.yaw === YAW_MAX) vel.yaw = 0;
+    if (view.pitch === PITCH_MIN || view.pitch === PITCH_MAX) vel.pitch = 0;
+    vel.yaw *= 0.92;
+    vel.pitch *= 0.92;
+    if (Math.abs(vel.yaw) < 1e-4) vel.yaw = 0;
+    if (Math.abs(vel.pitch) < 1e-4) vel.pitch = 0;
+  }
+  draw();
+  requestAnimationFrame(tick);
+}
+tick();
+
+/* =========================================================
+   4. Side panel: add form + list
+   ========================================================= */
+const addBtn = document.getElementById("addBtn");
+const form = document.getElementById("addForm");
+const cancelBtn = document.getElementById("cancelBtn");
+const fName = document.getElementById("fName");
+const sliders = {
+  cost: [document.getElementById("fCost"), document.getElementById("oCost")],
+  portion: [document.getElementById("fPortion"), document.getElementById("oPortion")],
+  taste: [document.getElementById("fTaste"), document.getElementById("oTaste")],
+};
+const listEl = document.getElementById("list");
+const countEl = document.getElementById("count");
+
+Object.values(sliders).forEach(([input, out]) => {
+  input.addEventListener("input", () => out.textContent = input.value);
+});
+
+function resetForm() {
+  fName.value = "";
+  Object.values(sliders).forEach(([input, out]) => { input.value = 5; out.textContent = "5"; });
+}
+
+addBtn.addEventListener("click", () => {
+  form.hidden = !form.hidden;
+  if (!form.hidden) fName.focus();
+});
+cancelBtn.addEventListener("click", () => { form.hidden = true; resetForm(); });
+
+const saveBtn = document.getElementById("saveBtn");
+
+function addPoint() {
+  const name = fName.value.trim();
+  if (!name) { fName.focus(); fName.classList.add("bad"); return; }
+  fName.classList.remove("bad");
+  points.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    name,
+    cost: +sliders.cost[0].value,
+    portion: +sliders.portion[0].value,
+    taste: +sliders.taste[0].value,
+  });
+  savePoints();
+  renderList();
+  resetForm();
+  form.hidden = true;
+}
+saveBtn.addEventListener("click", addPoint);
+fName.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); addPoint(); } });
+fName.addEventListener("input", () => fName.classList.remove("bad"));
+
+function renderList() {
+  listEl.innerHTML = "";
+  countEl.textContent = points.length;
+  if (!points.length) {
+    const li = document.createElement("li");
+    li.className = "empty";
+    li.style.border = "none"; li.style.background = "none";
+    li.textContent = "No foods yet — add one!";
+    listEl.appendChild(li);
+    return;
+  }
+  points.forEach(p => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="dot"></span><span class="name"></span>
+      <span class="vals">$${p.cost} · ${p.portion} · ${p.taste}</span>
+      <button class="del" title="Remove">&times;</button>`;
+    li.querySelector(".name").textContent = p.name;
+    li.querySelector(".name").title = p.name;
+    li.addEventListener("mouseenter", () => { activeId = p.id; li.classList.add("active"); });
+    li.addEventListener("mouseleave", () => { activeId = null; li.classList.remove("active"); });
+    li.querySelector(".del").addEventListener("click", () => {
+      points = points.filter(q => q.id !== p.id);
+      activeId = null;
+      savePoints();
+      renderList();
+    });
+    listEl.appendChild(li);
+  });
+}
+renderList();
+</script>
+</body>
+</html>
