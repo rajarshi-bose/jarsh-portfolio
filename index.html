@@ -74,7 +74,7 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 .lede-row { margin-top: clamp(28px, 4vw, 56px); padding-top: 14px; border-top: 2px solid var(--rule); row-gap: 24px; }
 .lede-row .k { grid-column: 1 / 4; font-weight: 600; }
 .lede-row .k span { display: block; color: var(--muted); font-weight: 500; }
-.lede-row p.big { grid-column: 4 / 10; margin: 0; font-size: clamp(1.35rem, 2.2vw, 2rem); line-height: 1.18; letter-spacing: -0.02em; font-weight: 500; text-wrap: pretty; max-width: 30ch; }
+.lede-row p.big { grid-column: 4 / 10; margin: 0; font-size: clamp(1.15rem, 1.6vw, 1.5rem); line-height: 1.28; letter-spacing: -0.015em; font-weight: 500; text-wrap: pretty; max-width: 42ch; }
 .lede-row p.small { grid-column: 10 / 13; margin: 0; color: var(--muted); font-size: .95rem; max-width: 34ch; }
 .fade { opacity: 1; transform: none; }
 .intro .fade { opacity: 0; transform: translateY(10px); }
@@ -83,7 +83,18 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 /* ---------- Project grid ---------- */
 .index { margin-top: clamp(72px, 10vw, 140px); }
 .index-head { padding-bottom: 10px; border-bottom: 2px solid var(--rule); font-size: .9rem; color: var(--muted); font-weight: 500; align-items: baseline; }
-.index-head h2 { grid-column: 1 / 7; margin: 0; font-size: inherit; font-weight: 700; color: var(--ink); }
+.index-head .lhs { grid-column: 1 / 7; display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 22px; }
+.index-head h2 { margin: 0; font-size: inherit; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.filter { display: inline-flex; align-items: baseline; gap: 8px; }
+.filter select {
+  appearance: none; -webkit-appearance: none; font: inherit; font-weight: 600; color: var(--ink); cursor: pointer;
+  background: transparent; border: 0; border-bottom: 1px solid var(--ink); border-radius: 0; padding: 0 16px 1px 0;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 5px) 60%, 100% 60%; background-size: 5px 5px; background-repeat: no-repeat;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+.filter select:hover { color: var(--signal); border-color: var(--signal); }
+.filter select option { color: initial; }
 .index-head .key { grid-column: 7 / 13; text-align: right; display: flex; justify-content: flex-end; gap: 18px; }
 .key span { display: inline-flex; align-items: center; gap: 7px; }
 .dot { width: .55em; height: .55em; border-radius: 50%; background: var(--go); display: inline-block; flex: none; }
@@ -109,11 +120,11 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
   transform: translateY(6px); filter: blur(4px);
 }
 .tile .reveal span { font-size: .95rem; font-weight: 700; opacity: 0; }
-.tile .cap { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; row-gap: 4px; align-items: baseline; }
-.tile .yr { font-size: .9rem; color: var(--muted); font-variant-numeric: tabular-nums; }
-.tile .st { font-size: .9rem; display: inline-flex; align-items: center; gap: 7px; justify-self: end; }
-.tile .name { grid-column: 1 / -1; font-size: clamp(1.25rem, 1.75vw, 1.7rem); font-weight: 700; letter-spacing: -0.035em; line-height: 1; text-wrap: balance; }
-.tile .field { grid-column: 1 / -1; font-size: .95rem; color: var(--muted); }
+.tile .cap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; column-gap: 10px; row-gap: 4px; }
+.tile .yr { font-size: .86rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tile .st { font-size: .86rem; display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+.tile .name { flex-basis: 100%; font-size: clamp(1.25rem, 1.75vw, 1.7rem); font-weight: 700; letter-spacing: -0.035em; line-height: 1; text-wrap: balance; }
+.tile .field { flex-basis: 100%; font-size: .95rem; color: var(--muted); }
 .tile .sum { display: none; margin: 0; font-size: .95rem; color: var(--muted); }
 
 @media (hover: hover) and (pointer: fine) {
@@ -234,7 +245,7 @@ footer .col b { display: block; color: var(--ink); font-weight: 600; }
   .tile .yr, .tile .st, .tile .field { font-size: .82rem; }
   .tile .sum { font-size: .88rem; }
   .index-head .key { display: none; }
-  .index-head h2 { grid-column: 1 / 13; }
+  .index-head .lhs { grid-column: 1 / 13; }
 }
 @media (prefers-reduced-motion: reduce) {
   .intro .ch > .a, .intro .fade { transform: none; opacity: 1; transition: none; }
@@ -345,6 +356,23 @@ const icons = {
     "....##..##......",
     "...#......#.....",
     "..#........#...."]),
+  tank: px([
+    "................",
+    ".....######.....",
+    "....#......#....",
+    "...#........#...",
+    "...#..####..#...",
+    "...#........#...",
+    "...#..####..#...",
+    "...#........#...",
+    "...#..####..#...",
+    "...#........#...",
+    "....#......#....",
+    ".....######.....",
+    ".......##.......",
+    ".....##..##.....",
+    ".....##..##.....",
+    ".......##......."]),
   daq: px([
     "################",
     "#..............#",
@@ -368,36 +396,32 @@ const icons = {
 
 const IMG = { tyt: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAABd0lEQVR42u1UsXHDMAyEeKpSqOYE5ACu0msIDaAV3GaBrOABPIR6zyBNkFqFK5+TAjQNAgQl21GTC46FTgTweODByjkHW5qBje13AC6frgRQuGY2Hr7wZG9P56uENGuqiNnlN0bV+wkA3t8Mg0kA0IldJzbM+e+i1Y81O+Ztm8vO1fsJy4qEfG+RB/4HgCor09P5in5Ji7oJ2iYi+aOTrUOMZ1QUJjTM4USkpdaZlakD5bYJhyXKAtMZ0CaunAEcyX/SOgDLAZj+ShhaIg04MKDUSCSOOurheQYyUkroNQbFEvgM0HM1AzN2U1kGeQZ0cjS7CDd3J6E/2qiQTkg+2TIp3ztAkUGShXkySG0PZBOTzaCRst10wsM8HpI3o/r+4F32veUvfvbtjA3RZ+B7qzDgm6GkkxoVK1WrQmZhWjoJmabS90BWmvFcYDB2M5nB7cL3NiyHLr6FphGHGwCTl5xBgQGDTB0yDLKFvMxgqZB/Bn+DwTb2A2p0TTG9DNbXAAAAAElFTkSuQmCC", iom: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAC40lEQVR42rVWTUgbQRR+uqlurHG7xtSV0LinLSGgC9JrK5TgofTQS6+FXgvSc+8Wei31Wui1FqSHHoqX4LGlkFg0GHpIYiWrG2N+m00w2MMnw7iTbExrhrBM3jy+9/O992ZGDMOgYa5RGvK6ZCA8vzRcA4e5H67jTCazoDUXtKbkWJJjFQvZa07RufVueTGE/dGpQ0SSY4lqHqGPeJO8oDWJaDdbAfqsKsd0hYh2LP8VI/CJIvgIIKC7FJYXQztW3aWfzleJSHT3UoqKhSy097693nhlsuSk89VSrT2rykxzf3sV0NBHfODMlTcpGAwy0Z96edLvI6IX987WvxwmUjbcL1Za+IaUcbvc+r5fouNcs1Gxyy2gl2ptBnJycgLMWqXQhWT4AnRewq+YrrBTBDcYB0S0/vlXTFc+bR8QUTQyheQgy/jytqORKWasfxWh0mdVWdQGkEsOYUxX+FroyFrPPpiZ00u1dldfepmM6cryYohVHY/eM0VXX0CPmyr+iv3hE2dDLyz4yzIO6ETKjpuq8egJ0SYR8f3RP4JoZIpPSzpf5SXpfBV530qeEm1uJU8TKZvI70Wyh/tdTULC97yLgO4RTAfGsGEFzsjsSjjiwGkmk3GV5WhXdBT+dGCMGWNTiDeDVkA3iCPrYlLxo+K8XcOm4ZzBTMM507WbfLU8NIM/c4293EUE/nEJ+vj5x6XfhWMe0+dqAsmxMFumA2NwDdnoyNrGx+dEtL72XkwmCxqbjgcHHVmbmaOZOd4qd5z8GjfVRMpmbJdqbZ5nMVcjA70qVlcm2Yjlew30EFEiZbt67RIHfVezUWE1c/uWjHFtl1tPH9yJm+rLD8Wj+o3BrkzxpmOEY4+5vfbMMMITZK7cvf/Wqw/C80viw8LVySzLKKq4qRrhCSIic+VfLn2xyfmmY44Tkej7f03T3WwlpiuP3xzghvbQHKyKEAeCEMfONRjou0QWr/nxK9bI0F/XfwH7uXilw6XiTQAAAABJRU5ErkJggg==", dp: "img/dither-press-cover.png" };
 const projects = [
-  { id: "pyroshock-resonant-bar", year: 2026, title: "Resonant Bar Pyroshock", field: "Simulation", status: "In progress", icon: "bar",
+  { id: "pyroshock-resonant-bar", months: "Jun – Aug", year: 2026, title: "Resonant Bar Pyroshock", field: "Simulation", status: "In progress", icon: "bar",
     summary: "Resonant bar setups that reproduce pyroshock environments for qualifying flight hardware, modeled in Abaqus at Los Alamos.",
-    facts: { Organization: "Los Alamos National Laboratory", Program: "LADSS", Tools: "Abaqus / Explicit", Year: "2026" },
+    facts: { Organization: "Los Alamos National Laboratory", Program: "LADSS", Tools: "Abaqus / Explicit" },
     text: [["Overview", "Pyrotechnic events produce short, high-frequency shock loads that can damage nearby hardware. Resonant bar fixtures let a lab recreate those loads on the bench. This project looks at how bar geometry and excitation shape the shock response a test article sees."],
            ["What I did", "Built explicit dynamics finite element models of the bar setup in Abaqus and compared simulated response against test data. The work is being written up as a paper."]] },
-  { id: "fsae-fuel-lube", year: 2026, title: "Formula SAE Fuel System", field: "Hardware", status: "In progress", icon: "fsae",
+  { id: "fsae-fuel-lube", months: "Aug – Present", year: 2026, title: "Formula SAE Fuel System", field: "Hardware", status: "In progress", icon: "fsae",
     summary: "A baffled fuel tank and modular plumbing for a KTM 690 that keeps pump pickup through 1.5 g of slosh.",
-    facts: { Team: "TAMU Formula SAE IC", Role: "Fuel systems engineer", Scope: "Feed, lube, overpressure", Year: "2026–27" },
+    facts: { Team: "TAMU Formula SAE IC", Role: "Fuel systems engineer", Scope: "Feed, lube, overpressure" },
     text: [["Overview", "The fuel and oil systems have to keep pressure stable through hard cornering, braking, and acceleration, while staying light and passing technical inspection."]] },
-  { id: "n2o-biprop-feed", year: 2026, title: "N₂O Bipropellant Feed", field: "Hardware", status: "In progress", icon: "feed",
+  { id: "lumina-fluids-bay", months: "Jun – Present", year: 2026, title: "Lumina Fluids Bay", field: "Hardware", status: "In progress", icon: "feed",
     summary: "Feed system design for a liquid rocket engine running self-pressurizing nitrous oxide.",
-    facts: { Type: "Bipropellant liquid engine", Oxidizer: "Nitrous oxide", Focus: "Feed system", Year: "2026" },
+    facts: { Type: "Bipropellant liquid engine", Oxidizer: "Nitrous oxide", Focus: "Feed system" },
     text: [["Overview", "Nitrous oxide is self-pressurizing, which simplifies the feed system but makes two-phase flow and tank pressure collapse real design concerns."]] },
-  { id: "bayesian-calibration", year: 2026, title: "Bayesian Calibration", field: "Simulation", status: "Complete", icon: "bayes",
-    summary: "Calibrating uncertain model parameters against measured shock data, so the model reports how confident it is.",
-    facts: { Organization: "Los Alamos National Laboratory", Program: "LADSS", Tools: "Python, Abaqus", Year: "2026" },
-    text: [["Overview", "Simulation inputs like damping and contact behavior are rarely known exactly. Bayesian calibration treats them as distributions and updates them with experimental evidence."]] },
-  { id: "ten-year-tape", year: 2026, title: "Ten Year Tape", field: "Game", status: "Complete", img: IMG.tyt, launch: "https://jarsh.us/ten-year-tape/",
+  { id: "ul-1-fluids", months: "Jan – May", year: 2026, title: "UL-1 Fluids", field: "Hardware", status: "Complete", icon: "tank",
+    summary: "Fluid system hardware for the UL-1 launch vehicle.",
+    facts: { Focus: "Vehicle fluid systems" },
+    text: [] },
+  { id: "ten-year-tape", months: "Sep – Oct", year: 2026, title: "Ten Year Tape", field: "Game", status: "Complete", img: IMG.tyt, launch: "https://jarsh.us/ten-year-tape/",
     summary: "A multiplayer stock trading game played over a compressed decade of market tape.",
-    facts: { Genre: "Stock trading", Players: "Multiplayer", Role: "Designer & developer", Year: "2026" }, text: [] },
-  { id: "isle-of-man", year: 2026, title: "Isle of Man", field: "Game", status: "In progress", img: IMG.iom, launch: "https://jarsh.us/isle-of-man/",
+    facts: { Genre: "Stock trading", Players: "Multiplayer", Role: "Designer & developer" }, text: [] },
+  { id: "isle-of-man", months: "Oct – Present", year: 2026, title: "Isle of Man", field: "Game", status: "In progress", img: IMG.iom, launch: "https://jarsh.us/isle-of-man/",
     summary: "A pixel-art city builder set on a small island.",
-    facts: { Genre: "City builder", Style: "Pixel art", Role: "Designer & developer", Year: "2026" }, text: [] },
-  { id: "dither-press", year: 2026, title: "Dither Press", field: "Tool", status: "Complete", img: IMG.dp, smooth: true, launch: "https://jarsh.us/dither-press/",
+    facts: { Genre: "City builder", Style: "Pixel art", Role: "Designer & developer" }, text: [] },
+  { id: "dither-press", months: "Oct", year: 2026, title: "Dither Press", field: "Tool", status: "Complete", img: IMG.dp, smooth: true, launch: "https://jarsh.us/dither-press/",
     summary: "Turns any image into a dithered print, with 13 dither methods, retro palettes, and high-resolution export.",
-    facts: { Category: "Image dithering", Methods: "13", Role: "Designer & developer", Year: "2026" }, text: [] },
-  { id: "qual-testing-scada", year: 2025, title: "Launch Vehicle Qualification", field: "Testing", status: "Complete", icon: "daq",
-    summary: "SCADA and data acquisition across 30+ hours of propulsion test campaigns on the sounding rocketry team.",
-    facts: { Team: "TAMU Sounding Rocketry", Area: "Qualification testing", Tools: "SCADA / DAQ", Year: "2025" },
-    text: [["Overview", "Before flight, hardware has to be tested against the loads and environments it will see. Good data acquisition is what turns those tests into evidence."]] }
+    facts: { Category: "Image dithering", Methods: "13", Role: "Designer & developer" }, text: [] }
 ];
 
 // Split text into words of masked letters. Each letter has a red twin underneath for the hover roll.
@@ -413,14 +437,20 @@ function letters(text, twin) {
 
 const app = document.getElementById("app");
 
+// Filter options come from the projects themselves, with these first
+function projectTypes() {
+  const first = ["Hardware", "Game", "Tool"];
+  const all = [...new Set(projects.map(p => p.field))];
+  return [...first.filter(t => all.includes(t)), ...all.filter(t => !first.includes(t))];
+}
 function homeView() {
   const tiles = projects.map(p => `
-    <a class="tile" href="#${p.id}" data-route="${p.id}">
+    <a class="tile" href="#${p.id}" data-route="${p.id}" data-type="${p.field}">
       <span class="art">${p.img ? `<img src="${p.img}" alt=""${p.smooth ? ' class="smooth"' : ""}>` : icons[p.icon]}
         <span class="reveal" aria-hidden="true"><p>${p.summary}</p><span>Read more</span></span>
       </span>
       <span class="cap">
-        <span class="yr">${p.year}</span>
+        <span class="yr">${p.months} ${p.year}</span>
         <span class="st"><i class="dot${p.status === "Complete" ? "" : " live"}"></i>${p.status}</span>
         <span class="name" aria-label="${p.title}"><span aria-hidden="true">${letters(p.title, true)}</span></span>
         <span class="field">${p.field}</span>
@@ -432,20 +462,24 @@ function homeView() {
     <section class="hero intro" id="intro">
       <h1 aria-label="Jarsh Bose"><span aria-hidden="true">${letters("Jarsh Bose", false)}</span></h1>
       <div class="lede-row grid fade">
-        <p class="k">Mechanical engineer<span>Propulsion and fluid systems</span></p>
-        <p class="big">I design the plumbing that keeps engines fed, and I'm heading toward graduate research in cryogenic propellant management.</p>
+        <p class="k">Mechanical Engineer<span>Vehicle fluid systems for propulsion and thermal management</span></p>
+        <p class="big">I bring a multi-year background in developing fluid system hardware across two launch vehicle lifecycles, primarily experience designing for high-psi, two-phase flows, extreme packaging constraints, and sustained g events. Skilled at balancing shifting project scopes and leading the end to end development for fluids hardware.</p>
         <p class="small">Senior at Texas A&amp;M, graduating Spring 2027. Previously at Los Alamos National Laboratory. I also make small games and tools in the browser.</p>
       </div>
     </section>
     <section class="index" aria-labelledby="idx">
-      <div class="index-head grid"><h2 id="idx">Projects, ${projects.length}</h2><span class="key"><span><i class="dot live"></i>In progress</span><span><i class="dot"></i>Complete</span></span></div>
+      <div class="index-head grid"><div class="lhs"><h2 id="idx">Projects, <span id="pcount">${projects.length}</span></h2>
+        <label class="filter"><span>Type</span><select id="typeFilter">
+          <option value="">All</option>${projectTypes().map(t => `<option value="${t}">${t}</option>`).join("")}
+        </select></label></div><span class="key"><span><i class="dot live"></i>In progress</span><span><i class="dot"></i>Complete</span></span></div>
       <div class="tiles">${tiles}</div>
     </section>
   </div>`;
 }
 
 function projectView(p) {
-  const facts = Object.entries(p.facts).map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+  const facts = Object.entries(p.facts).map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")
+    + `<div><dt>Dates</dt><dd>${p.months} ${p.year}</dd></div>`;
   const text = p.text.length
     ? p.text.map(([h, t]) => `<h3>${h}</h3><p>${t}</p>`).join("")
     : `<h3>Overview</h3><p class="draft">Write a few lines on how it works and how you built it.</p>`;
@@ -492,6 +526,7 @@ function artView() {
 
 // ---------- Change log (newest first; each update adds 0.01) ----------
 const CHANGELOG = [
+  { v: "1.22", date: "2026-10-22", notes: ["New bio and title on the home page", "Filter projects by type from the projects bar", "Each project now shows its month range", "Added UL-1 Fluids; N₂O feed project renamed to Lumina Fluids Bay", "Removed Launch Vehicle Qualification and Bayesian Calibration"] },
   { v: "1.21", date: "2026-10-22", notes: ["Bigger triangle on the flashing launch prompt"] },
   { v: "1.20", date: "2026-10-22", notes: ["New Dither Press cover: a dithered cat"] },
   { v: "1.19", date: "2026-10-22", notes: ["Swiss redesign: one typeface, a 12-column grid, and a five-across project grid", "Titles animate in letter by letter; project names roll to red on hover", "Hovering a project fades in its summary over the art", "Blinking red dot for projects in progress, green for complete"] },
@@ -521,6 +556,15 @@ document.getElementById("log-panel").innerHTML = `<h4>Change log</h4>` + CHANGEL
   <ul>${e.notes.map(n => `<li>${esc(n)}</li>`).join("")}</ul></div>`).join("");
 document.addEventListener("click", (e) => { const l = document.getElementById("log"); if (l.open && !l.contains(e.target)) l.open = false; });
 document.addEventListener("keydown", (e) => { const l = document.getElementById("log"); if (e.key === "Escape" && l.open) { l.open = false; l.querySelector("summary").focus(); } });
+
+// ---------- Project type filter ----------
+app.addEventListener("change", (e) => {
+  if (e.target.id !== "typeFilter") return;
+  const t = e.target.value;
+  let n = 0;
+  app.querySelectorAll(".tile[data-type]").forEach(el => { const show = !t || el.dataset.type === t; el.hidden = !show; if (show) n++; });
+  document.getElementById("pcount").textContent = n;
+});
 
 // ---------- Router ----------
 const routes = { about: aboutView, art: artView };
