@@ -115,6 +115,7 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 .tile { display: block; min-width: 0; }
 .tile-in { display: flex; flex-direction: column; gap: 12px; }
 .tile.sliding { clip-path: inset(0); }
+.tile.sliding .tile-in { will-change: transform; }
 .tile .art { position: relative; aspect-ratio: 1; max-width: 100%; overflow: hidden; background: var(--ink); color: var(--paper); display: grid; place-items: center; }
 .tile .art > svg { width: 68%; height: 68%; }
 .tile .art > img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; display: block; }
@@ -175,8 +176,13 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 .body-text h3 { grid-column: 1 / 4; margin: 0; font-size: 1rem; font-weight: 700; }
 .body-text p { grid-column: 4 / 10; margin: 0; font-size: 1.2rem; line-height: 1.5; max-width: 60ch; }
 .body-text p.draft { color: var(--muted); }
-.kw { grid-column: 4 / 10; margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
-.kw li { border: 1px solid var(--rule); padding: 4px 10px; font-size: .92rem; font-weight: 500; line-height: 1.3; }
+.kw { grid-column: 4 / 10; min-width: 0; display: flex; flex-wrap: wrap; gap: 8px; max-height: 68px; overflow: hidden; }
+.kw-item { flex: none; white-space: nowrap; border: 1px solid var(--rule); padding: 4px 10px; font-size: .92rem; font-weight: 500; line-height: 20px; }
+/* Past two lines: the second line keeps going in one row and fades out at the right edge */
+.kw.split { flex-direction: column; flex-wrap: nowrap; max-height: none; }
+.kw-row { display: flex; gap: 8px; min-width: 0; }
+.kw-row.tail { overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, #000 62%, transparent 98%); mask-image: linear-gradient(to right, #000 62%, transparent 98%); }
 .related { margin-top: clamp(64px, 9vw, 120px); }
 .related .key { color: var(--muted); }
 .tile .shared { color: var(--muted); }
@@ -414,30 +420,30 @@ const icons = {
 
 const IMG = { tyt: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAABd0lEQVR42u1UsXHDMAyEeKpSqOYE5ACu0msIDaAV3GaBrOABPIR6zyBNkFqFK5+TAjQNAgQl21GTC46FTgTweODByjkHW5qBje13AC6frgRQuGY2Hr7wZG9P56uENGuqiNnlN0bV+wkA3t8Mg0kA0IldJzbM+e+i1Y81O+Ztm8vO1fsJy4qEfG+RB/4HgCor09P5in5Ji7oJ2iYi+aOTrUOMZ1QUJjTM4USkpdaZlakD5bYJhyXKAtMZ0CaunAEcyX/SOgDLAZj+ShhaIg04MKDUSCSOOurheQYyUkroNQbFEvgM0HM1AzN2U1kGeQZ0cjS7CDd3J6E/2qiQTkg+2TIp3ztAkUGShXkySG0PZBOTzaCRst10wsM8HpI3o/r+4F32veUvfvbtjA3RZ+B7qzDgm6GkkxoVK1WrQmZhWjoJmabS90BWmvFcYDB2M5nB7cL3NiyHLr6FphGHGwCTl5xBgQGDTB0yDLKFvMxgqZB/Bn+DwTb2A2p0TTG9DNbXAAAAAElFTkSuQmCC", iom: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAC40lEQVR42rVWTUgbQRR+uqlurHG7xtSV0LinLSGgC9JrK5TgofTQS6+FXgvSc+8Wei31Wui1FqSHHoqX4LGlkFg0GHpIYiWrG2N+m00w2MMnw7iTbExrhrBM3jy+9/O992ZGDMOgYa5RGvK6ZCA8vzRcA4e5H67jTCazoDUXtKbkWJJjFQvZa07RufVueTGE/dGpQ0SSY4lqHqGPeJO8oDWJaDdbAfqsKsd0hYh2LP8VI/CJIvgIIKC7FJYXQztW3aWfzleJSHT3UoqKhSy097693nhlsuSk89VSrT2rykxzf3sV0NBHfODMlTcpGAwy0Z96edLvI6IX987WvxwmUjbcL1Za+IaUcbvc+r5fouNcs1Gxyy2gl2ptBnJycgLMWqXQhWT4AnRewq+YrrBTBDcYB0S0/vlXTFc+bR8QUTQyheQgy/jytqORKWasfxWh0mdVWdQGkEsOYUxX+FroyFrPPpiZ00u1dldfepmM6cryYohVHY/eM0VXX0CPmyr+iv3hE2dDLyz4yzIO6ETKjpuq8egJ0SYR8f3RP4JoZIpPSzpf5SXpfBV530qeEm1uJU8TKZvI70Wyh/tdTULC97yLgO4RTAfGsGEFzsjsSjjiwGkmk3GV5WhXdBT+dGCMGWNTiDeDVkA3iCPrYlLxo+K8XcOm4ZzBTMM507WbfLU8NIM/c4293EUE/nEJ+vj5x6XfhWMe0+dqAsmxMFumA2NwDdnoyNrGx+dEtL72XkwmCxqbjgcHHVmbmaOZOd4qd5z8GjfVRMpmbJdqbZ5nMVcjA70qVlcm2Yjlew30EFEiZbt67RIHfVezUWE1c/uWjHFtl1tPH9yJm+rLD8Wj+o3BrkzxpmOEY4+5vfbMMMITZK7cvf/Wqw/C80viw8LVySzLKKq4qRrhCSIic+VfLn2xyfmmY44Tkej7f03T3WwlpiuP3xzghvbQHKyKEAeCEMfONRjou0QWr/nxK9bI0F/XfwH7uXilw6XiTQAAAABJRU5ErkJggg==", dp: "img/dither-press-cover.png" };
 const projects = [
-  { id: "pyroshock-resonant-bar", tags: ["Los Alamos", "simulation", "explicit dynamics", "FEA", "Abaqus", "pyroshock", "research", "technical writing"], months: "Jun – Aug", year: 2026, title: "Resonant Bar Pyroshock", field: "Simulation", status: "In progress", icon: "bar",
+  { id: "pyroshock-resonant-bar", tags: ["los alamos", "simulation", "explicit dynamics", "fea", "abaqus", "pyroshock", "research", "technical writing"], months: "Jun – Aug", year: 2026, title: "Resonant Bar Pyroshock", field: "Simulation", status: "In progress", icon: "bar",
     summary: "Resonant bar setups that reproduce pyroshock environments for qualifying flight hardware, modeled in Abaqus at Los Alamos.",
     facts: { Organization: "Los Alamos National Laboratory", Program: "LADSS", Tools: "Abaqus / Explicit" },
     text: [["Overview", "Pyrotechnic events produce short, high-frequency shock loads that can damage nearby hardware. Resonant bar fixtures let a lab recreate those loads on the bench. This project looks at how bar geometry and excitation shape the shock response a test article sees."],
            ["What I did", "Built explicit dynamics finite element models of the bar setup in Abaqus and compared simulated response against test data. The work is being written up as a paper."]] },
-  { id: "fsae-fuel-lube", tags: ["Formula SAE", "fluid systems", "hardware", "fuel systems", "packaging constraints", "sustained g events", "end-to-end"], months: "Aug – Present", year: 2026, title: "Formula SAE Fuel System", field: "Hardware", status: "In progress", icon: "fsae",
+  { id: "fsae-fuel-lube", tags: ["formula sae", "fluid systems", "hardware", "fuel systems", "slosh", "packaging constraints", "sustained g events", "lifecycle", "end to end"], months: "Aug – Present", year: 2026, title: "Formula SAE Fuel System", field: "Hardware", status: "In progress", icon: "fsae",
     summary: "A baffled fuel tank and modular plumbing for a KTM 690 that keeps pump pickup through 1.5 g of slosh.",
     facts: { Team: "TAMU Formula SAE IC", Role: "Fuel systems engineer", Scope: "Feed, lube, overpressure" },
     text: [["Overview", "The fuel and oil systems have to keep pressure stable through hard cornering, braking, and acceleration, while staying light and passing technical inspection."]] },
-  { id: "lumina-fluids-bay", tags: ["Lumina", "fluid systems", "hardware", "end-to-end", "Responsible engineer", "shifting scopes", "packaging constraints"], months: "Jun – Present", year: 2026, title: "Lumina Fluids Bay", field: "Hardware", status: "In progress", icon: "feed",
+  { id: "lumina-fluids-bay", tags: ["lumina launch vehicle", "fluid systems", "hardware", "lifecycle", "end to end", "responsible engineer", "shifting scopes", "packaging constraints"], months: "Jun – Present", year: 2026, title: "Lumina Fluids Bay", field: "Hardware", status: "In progress", icon: "feed",
     summary: "Feed system design for a liquid rocket engine running self-pressurizing nitrous oxide.",
     facts: { Type: "Bipropellant liquid engine", Oxidizer: "Nitrous oxide", Focus: "Feed system" },
     text: [["Overview", "Nitrous oxide is self-pressurizing, which simplifies the feed system but makes two-phase flow and tank pressure collapse real design concerns."]] },
-  { id: "ul-1-fluids", tags: ["Lumina", "fluid systems", "hardware", "tube bending", "hands-on", "end-to-end"], months: "Jan – May", year: 2026, title: "UL-1 Fluids", field: "Hardware", status: "Complete", icon: "tank",
+  { id: "ul-1-fluids", tags: ["lumina launch vehicle", "fluid systems", "hardware", "lifecycle", "tube bending", "hands-on", "end to end"], months: "Jan – May", year: 2026, title: "UL-1 Fluids", field: "Hardware", status: "Complete", icon: "tank",
     summary: "Fluid system hardware for the UL-1 launch vehicle.",
     facts: { Focus: "Vehicle fluid systems" },
     text: [] },
-  { id: "ten-year-tape", tags: ["game", "web development", "multiplayer", "game design", "end-to-end"], months: "Sep – Oct", year: 2026, title: "Ten Year Tape", field: "Game", status: "Complete", img: IMG.tyt, launch: "https://jarsh.us/ten-year-tape/",
+  { id: "ten-year-tape", tags: ["game", "web development", "multiplayer", "game design", "end to end"], months: "Sep – Oct", year: 2026, title: "Ten Year Tape", field: "Game", status: "Complete", img: IMG.tyt, launch: "https://jarsh.us/ten-year-tape/",
     summary: "A multiplayer stock trading game played over a compressed decade of market tape.",
     facts: { Genre: "Stock trading", Players: "Multiplayer", Role: "Designer & developer" }, text: [] },
   { id: "isle-of-man", tags: ["game", "web development", "pixel art", "simulation", "game design"], months: "Oct – Present", year: 2026, title: "Isle of Man", field: "Game", status: "In progress", img: IMG.iom, launch: "https://jarsh.us/isle-of-man/",
     summary: "A pixel-art city builder set on a small island.",
     facts: { Genre: "City builder", Style: "Pixel art", Role: "Designer & developer" }, text: [] },
-  { id: "dither-press", tags: ["tool", "web development", "image processing", "pixel art", "end-to-end"], months: "Oct", year: 2026, title: "Dither Press", field: "Tool", status: "Complete", img: IMG.dp, smooth: true, launch: "https://jarsh.us/dither-press/",
+  { id: "dither-press", tags: ["tool", "web development", "image processing", "pixel art", "end to end"], months: "Oct", year: 2026, title: "Dither Press", field: "Tool", status: "Complete", img: IMG.dp, smooth: true, launch: "https://jarsh.us/dither-press/",
     summary: "Turns any image into a dithered print, with 13 dither methods, retro palettes, and high-resolution export.",
     facts: { Category: "Image dithering", Methods: "13", Role: "Designer & developer" }, text: [] }
 ];
@@ -549,7 +555,7 @@ function projectView(p) {
       ${side}
     </div>
     <dl class="facts grid">${facts}</dl>
-    <div class="body-text grid"><h3>Keywords</h3><ul class="kw">${p.tags.map(t => `<li>${esc(t)}</li>`).join("")}</ul><h3>Summary</h3><p>${p.summary}</p>${text}</div>
+    <div class="body-text grid"><h3>Keywords</h3><div class="kw" role="list" aria-label="Keywords">${p.tags.map(t => `<span class="kw-item" role="listitem">${esc(t)}</span>`).join("")}</div><h3>Summary</h3><p>${p.summary}</p>${text}</div>
     ${relatedHTML(p)}
   </div>`;
 }
@@ -576,6 +582,7 @@ function artView() {
 
 // ---------- Change log (newest first; each update adds 0.01) ----------
 const CHANGELOG = [
+  { v: "1.25", date: "2026-10-22", notes: ["Filtered projects slide in one at a time", "Keywords are lowercase, with new lifecycle and slosh tags", "Keyword lists stop at two lines and fade out at the edge"] },
   { v: "1.24", date: "2026-10-22", notes: ["Filtering now slides projects up and out, then slides the filtered set up into place", "Large titles no longer clip the edges of letters", "No more edge showing when you hover off a project"] },
   { v: "1.23", date: "2026-10-22", notes: ["Filtering now fades hidden projects to black and slides the rest into place", "New black type menu", "Keywords on every project page", "Related projects bar at the bottom of each project page"] },
   { v: "1.22", date: "2026-10-22", notes: ["New bio and title on the home page", "Filter projects by type from the projects bar", "Each project now shows its month range", "Added UL-1 Fluids; N₂O feed project renamed to Lumina Fluids Bay", "Removed Launch Vehicle Qualification and Bayesian Calibration"] },
@@ -637,7 +644,7 @@ function applyFilter(t) {
     tiles.filter(match).forEach((el, i) => {
       el.classList.add("sliding");
       const an = inner(el).animate([{ transform: "translateY(102%)" }, { transform: "translateY(0)" }],
-        { duration: 700, easing: settle, delay: 60 + i * 55, fill: "backwards" });
+        { duration: 640, easing: settle, delay: 80 + i * 150, fill: "backwards" });
       an.finished.then(() => el.classList.remove("sliding")).catch(() => {});
     });
   });
@@ -701,7 +708,22 @@ function show(route) {
   // Play the letter intro once per view
   const intro = document.getElementById("intro");
   if (intro) { intro.classList.add("intro"); intro.getBoundingClientRect(); requestAnimationFrame(() => intro.classList.add("go")); }
+  clipKeywords();
 }
+// When keywords run past two lines, keep line one as is and put the rest in one row that fades out
+function clipKeywords() {
+  const k = document.querySelector(".kw"); if (!k) return;
+  const items = [...k.querySelectorAll(".kw-item")];
+  k.classList.remove("split"); k.replaceChildren(...items);
+  if (k.scrollHeight <= k.clientHeight + 1) return;
+  const top = items[0].offsetTop;
+  const first = items.filter(el => el.offsetTop === top);
+  const row = (cls, els) => { const r = document.createElement("div"); r.className = "kw-row " + cls; r.setAttribute("role", "none"); r.append(...els); return r; };
+  k.replaceChildren(row("first", first), row("tail", items.slice(first.length)));
+  k.classList.add("split");
+}
+addEventListener("resize", clipKeywords);
+document.fonts && document.fonts.ready.then(clipKeywords);
 document.addEventListener("click", (e) => {
   const a = e.target.closest("a[data-route]");
   if (!a) return;
