@@ -86,15 +86,26 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 .index-head .lhs { grid-column: 1 / 7; display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 22px; }
 .index-head h2 { margin: 0; font-size: inherit; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
 .filter { display: inline-flex; align-items: baseline; gap: 8px; }
-.filter select {
-  appearance: none; -webkit-appearance: none; font: inherit; font-weight: 600; color: var(--ink); cursor: pointer;
-  background: transparent; border: 0; border-bottom: 1px solid var(--ink); border-radius: 0; padding: 0 16px 1px 0;
-  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
-  background-position: calc(100% - 5px) 60%, 100% 60%; background-size: 5px 5px; background-repeat: no-repeat;
+.dd { position: relative; }
+.dd-btn {
+  font: inherit; font-weight: 600; color: var(--ink); cursor: pointer; background: transparent;
+  border: 0; border-bottom: 1px solid var(--ink); border-radius: 0; padding: 0 18px 1px 0; position: relative;
   transition: color 150ms ease, border-color 150ms ease;
 }
-.filter select:hover { color: var(--signal); border-color: var(--signal); }
-.filter select option { color: initial; }
+.dd-btn::after { content: ""; position: absolute; right: 2px; top: 50%; width: 0; height: 0; border: 5px solid transparent; border-top-color: currentColor; border-bottom: 0; transform: translateY(-30%); transition: transform 200ms var(--ease-out); }
+.dd-btn[aria-expanded="true"]::after { transform: translateY(-30%) rotate(180deg); }
+.dd-btn:hover, .dd-btn[aria-expanded="true"] { color: var(--signal); border-color: var(--signal); }
+.dd-list {
+  position: absolute; left: -14px; top: calc(100% + 10px); z-index: 30; min-width: 180px;
+  margin: 0; padding: 6px 0; list-style: none; background: #000; color: #f1efe9;
+  font-size: .95rem; font-weight: 600; outline: none;
+  animation: ddIn 180ms var(--ease-out);
+}
+@keyframes ddIn { from { opacity: 0; transform: translateY(-4px); } }
+.dd-list li { padding: 8px 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+.dd-list li::before { content: ""; width: 7px; height: 7px; flex: none; }
+.dd-list li[aria-selected="true"]::before { background: currentColor; }
+.dd-list li.active, .dd-list li:hover { background: var(--signal); color: #000; }
 .index-head .key { grid-column: 7 / 13; text-align: right; display: flex; justify-content: flex-end; gap: 18px; }
 .key span { display: inline-flex; align-items: center; gap: 7px; }
 .dot { width: .55em; height: .55em; border-radius: 50%; background: var(--go); display: inline-block; flex: none; }
@@ -162,6 +173,11 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 .body-text h3 { grid-column: 1 / 4; margin: 0; font-size: 1rem; font-weight: 700; }
 .body-text p { grid-column: 4 / 10; margin: 0; font-size: 1.2rem; line-height: 1.5; max-width: 60ch; }
 .body-text p.draft { color: var(--muted); }
+.kw { grid-column: 4 / 10; margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+.kw li { border: 1px solid var(--rule); padding: 4px 10px; font-size: .92rem; font-weight: 500; line-height: 1.3; }
+.related { margin-top: clamp(64px, 9vw, 120px); }
+.related .key { color: var(--muted); }
+.tile .shared { color: var(--muted); }
 .p-head { display: grid; grid-template-columns: minmax(0, 1fr) clamp(130px, 14vw, 190px); gap: clamp(20px, 4vw, 56px); align-items: start; }
 .p-meta { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 22px 0 0; font-size: 1.05rem; color: var(--muted); }
 .p-meta b { color: var(--ink); font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-left: 6px; }
@@ -227,7 +243,7 @@ footer .col b { display: block; color: var(--ink); font-weight: 600; }
   .lede-row p.small { grid-column: 1 / 13; }
   .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .facts div { grid-column: span 6; }
-  .body-text h3, .body-text p { grid-column: 1 / 13; }
+  .body-text h3, .body-text p, .kw { grid-column: 1 / 13; }
   .slot { grid-column: span 6; }
   .p-head { grid-template-columns: minmax(0, 1fr); }
   .p-art { width: 132px; order: -1; }
@@ -396,30 +412,30 @@ const icons = {
 
 const IMG = { tyt: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAABd0lEQVR42u1UsXHDMAyEeKpSqOYE5ACu0msIDaAV3GaBrOABPIR6zyBNkFqFK5+TAjQNAgQl21GTC46FTgTweODByjkHW5qBje13AC6frgRQuGY2Hr7wZG9P56uENGuqiNnlN0bV+wkA3t8Mg0kA0IldJzbM+e+i1Y81O+Ztm8vO1fsJy4qEfG+RB/4HgCor09P5in5Ji7oJ2iYi+aOTrUOMZ1QUJjTM4USkpdaZlakD5bYJhyXKAtMZ0CaunAEcyX/SOgDLAZj+ShhaIg04MKDUSCSOOurheQYyUkroNQbFEvgM0HM1AzN2U1kGeQZ0cjS7CDd3J6E/2qiQTkg+2TIp3ztAkUGShXkySG0PZBOTzaCRst10wsM8HpI3o/r+4F32veUvfvbtjA3RZ+B7qzDgm6GkkxoVK1WrQmZhWjoJmabS90BWmvFcYDB2M5nB7cL3NiyHLr6FphGHGwCTl5xBgQGDTB0yDLKFvMxgqZB/Bn+DwTb2A2p0TTG9DNbXAAAAAElFTkSuQmCC", iom: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAC40lEQVR42rVWTUgbQRR+uqlurHG7xtSV0LinLSGgC9JrK5TgofTQS6+FXgvSc+8Wei31Wui1FqSHHoqX4LGlkFg0GHpIYiWrG2N+m00w2MMnw7iTbExrhrBM3jy+9/O992ZGDMOgYa5RGvK6ZCA8vzRcA4e5H67jTCazoDUXtKbkWJJjFQvZa07RufVueTGE/dGpQ0SSY4lqHqGPeJO8oDWJaDdbAfqsKsd0hYh2LP8VI/CJIvgIIKC7FJYXQztW3aWfzleJSHT3UoqKhSy097693nhlsuSk89VSrT2rykxzf3sV0NBHfODMlTcpGAwy0Z96edLvI6IX987WvxwmUjbcL1Za+IaUcbvc+r5fouNcs1Gxyy2gl2ptBnJycgLMWqXQhWT4AnRewq+YrrBTBDcYB0S0/vlXTFc+bR8QUTQyheQgy/jytqORKWasfxWh0mdVWdQGkEsOYUxX+FroyFrPPpiZ00u1dldfepmM6cryYohVHY/eM0VXX0CPmyr+iv3hE2dDLyz4yzIO6ETKjpuq8egJ0SYR8f3RP4JoZIpPSzpf5SXpfBV530qeEm1uJU8TKZvI70Wyh/tdTULC97yLgO4RTAfGsGEFzsjsSjjiwGkmk3GV5WhXdBT+dGCMGWNTiDeDVkA3iCPrYlLxo+K8XcOm4ZzBTMM507WbfLU8NIM/c4293EUE/nEJ+vj5x6XfhWMe0+dqAsmxMFumA2NwDdnoyNrGx+dEtL72XkwmCxqbjgcHHVmbmaOZOd4qd5z8GjfVRMpmbJdqbZ5nMVcjA70qVlcm2Yjlew30EFEiZbt67RIHfVezUWE1c/uWjHFtl1tPH9yJm+rLD8Wj+o3BrkzxpmOEY4+5vfbMMMITZK7cvf/Wqw/C80viw8LVySzLKKq4qRrhCSIic+VfLn2xyfmmY44Tkej7f03T3WwlpiuP3xzghvbQHKyKEAeCEMfONRjou0QWr/nxK9bI0F/XfwH7uXilw6XiTQAAAABJRU5ErkJggg==", dp: "img/dither-press-cover.png" };
 const projects = [
-  { id: "pyroshock-resonant-bar", months: "Jun – Aug", year: 2026, title: "Resonant Bar Pyroshock", field: "Simulation", status: "In progress", icon: "bar",
+  { id: "pyroshock-resonant-bar", tags: ["Los Alamos", "simulation", "explicit dynamics", "FEA", "Abaqus", "pyroshock", "research", "technical writing"], months: "Jun – Aug", year: 2026, title: "Resonant Bar Pyroshock", field: "Simulation", status: "In progress", icon: "bar",
     summary: "Resonant bar setups that reproduce pyroshock environments for qualifying flight hardware, modeled in Abaqus at Los Alamos.",
     facts: { Organization: "Los Alamos National Laboratory", Program: "LADSS", Tools: "Abaqus / Explicit" },
     text: [["Overview", "Pyrotechnic events produce short, high-frequency shock loads that can damage nearby hardware. Resonant bar fixtures let a lab recreate those loads on the bench. This project looks at how bar geometry and excitation shape the shock response a test article sees."],
            ["What I did", "Built explicit dynamics finite element models of the bar setup in Abaqus and compared simulated response against test data. The work is being written up as a paper."]] },
-  { id: "fsae-fuel-lube", months: "Aug – Present", year: 2026, title: "Formula SAE Fuel System", field: "Hardware", status: "In progress", icon: "fsae",
+  { id: "fsae-fuel-lube", tags: ["Formula SAE", "fluid systems", "hardware", "fuel systems", "packaging constraints", "sustained g events", "end-to-end"], months: "Aug – Present", year: 2026, title: "Formula SAE Fuel System", field: "Hardware", status: "In progress", icon: "fsae",
     summary: "A baffled fuel tank and modular plumbing for a KTM 690 that keeps pump pickup through 1.5 g of slosh.",
     facts: { Team: "TAMU Formula SAE IC", Role: "Fuel systems engineer", Scope: "Feed, lube, overpressure" },
     text: [["Overview", "The fuel and oil systems have to keep pressure stable through hard cornering, braking, and acceleration, while staying light and passing technical inspection."]] },
-  { id: "lumina-fluids-bay", months: "Jun – Present", year: 2026, title: "Lumina Fluids Bay", field: "Hardware", status: "In progress", icon: "feed",
+  { id: "lumina-fluids-bay", tags: ["Lumina", "fluid systems", "hardware", "end-to-end", "Responsible engineer", "shifting scopes", "packaging constraints"], months: "Jun – Present", year: 2026, title: "Lumina Fluids Bay", field: "Hardware", status: "In progress", icon: "feed",
     summary: "Feed system design for a liquid rocket engine running self-pressurizing nitrous oxide.",
     facts: { Type: "Bipropellant liquid engine", Oxidizer: "Nitrous oxide", Focus: "Feed system" },
     text: [["Overview", "Nitrous oxide is self-pressurizing, which simplifies the feed system but makes two-phase flow and tank pressure collapse real design concerns."]] },
-  { id: "ul-1-fluids", months: "Jan – May", year: 2026, title: "UL-1 Fluids", field: "Hardware", status: "Complete", icon: "tank",
+  { id: "ul-1-fluids", tags: ["Lumina", "fluid systems", "hardware", "tube bending", "hands-on", "end-to-end"], months: "Jan – May", year: 2026, title: "UL-1 Fluids", field: "Hardware", status: "Complete", icon: "tank",
     summary: "Fluid system hardware for the UL-1 launch vehicle.",
     facts: { Focus: "Vehicle fluid systems" },
     text: [] },
-  { id: "ten-year-tape", months: "Sep – Oct", year: 2026, title: "Ten Year Tape", field: "Game", status: "Complete", img: IMG.tyt, launch: "https://jarsh.us/ten-year-tape/",
+  { id: "ten-year-tape", tags: ["game", "web development", "multiplayer", "game design", "end-to-end"], months: "Sep – Oct", year: 2026, title: "Ten Year Tape", field: "Game", status: "Complete", img: IMG.tyt, launch: "https://jarsh.us/ten-year-tape/",
     summary: "A multiplayer stock trading game played over a compressed decade of market tape.",
     facts: { Genre: "Stock trading", Players: "Multiplayer", Role: "Designer & developer" }, text: [] },
-  { id: "isle-of-man", months: "Oct – Present", year: 2026, title: "Isle of Man", field: "Game", status: "In progress", img: IMG.iom, launch: "https://jarsh.us/isle-of-man/",
+  { id: "isle-of-man", tags: ["game", "web development", "pixel art", "simulation", "game design"], months: "Oct – Present", year: 2026, title: "Isle of Man", field: "Game", status: "In progress", img: IMG.iom, launch: "https://jarsh.us/isle-of-man/",
     summary: "A pixel-art city builder set on a small island.",
     facts: { Genre: "City builder", Style: "Pixel art", Role: "Designer & developer" }, text: [] },
-  { id: "dither-press", months: "Oct", year: 2026, title: "Dither Press", field: "Tool", status: "Complete", img: IMG.dp, smooth: true, launch: "https://jarsh.us/dither-press/",
+  { id: "dither-press", tags: ["tool", "web development", "image processing", "pixel art", "end-to-end"], months: "Oct", year: 2026, title: "Dither Press", field: "Tool", status: "Complete", img: IMG.dp, smooth: true, launch: "https://jarsh.us/dither-press/",
     summary: "Turns any image into a dithered print, with 13 dither methods, retro palettes, and high-resolution export.",
     facts: { Category: "Image dithering", Methods: "13", Role: "Designer & developer" }, text: [] }
 ];
@@ -443,9 +459,9 @@ function projectTypes() {
   const all = [...new Set(projects.map(p => p.field))];
   return [...first.filter(t => all.includes(t)), ...all.filter(t => !first.includes(t))];
 }
-function homeView() {
-  const tiles = projects.map(p => `
-    <a class="tile" href="#${p.id}" data-route="${p.id}" data-type="${p.field}">
+function tileHTML(p, opts = {}) {
+  return `
+    <a class="tile" href="#${p.id}" data-route="${p.id}" data-type="${p.field}"${opts.hidden ? " hidden" : ""}>
       <span class="art">${p.img ? `<img src="${p.img}" alt=""${p.smooth ? ' class="smooth"' : ""}>` : icons[p.icon]}
         <span class="reveal" aria-hidden="true"><p>${p.summary}</p><span>Read more</span></span>
       </span>
@@ -453,10 +469,16 @@ function homeView() {
         <span class="yr">${p.months} ${p.year}</span>
         <span class="st"><i class="dot${p.status === "Complete" ? "" : " live"}"></i>${p.status}</span>
         <span class="name" aria-label="${p.title}"><span aria-hidden="true">${letters(p.title, true)}</span></span>
-        <span class="field">${p.field}</span>
+        <span class="field">${opts.shared ? `<span class="shared">${opts.shared.map(esc).join(", ")}</span>` : p.field}</span>
       </span>
       <span class="sum">${p.summary}</span>
-    </a>`).join("");
+    </a>`;
+}
+let currentType = "";
+function homeView() {
+  const tiles = projects.map(p => tileHTML(p, { hidden: currentType && p.field !== currentType })).join("");
+  const shown = projects.filter(p => !currentType || p.field === currentType).length;
+  const opts = ["", ...projectTypes()];
   return `
   <div class="page">
     <section class="hero intro" id="intro">
@@ -468,15 +490,40 @@ function homeView() {
       </div>
     </section>
     <section class="index" aria-labelledby="idx">
-      <div class="index-head grid"><div class="lhs"><h2 id="idx">Projects, <span id="pcount">${projects.length}</span></h2>
-        <label class="filter"><span>Type</span><select id="typeFilter">
-          <option value="">All</option>${projectTypes().map(t => `<option value="${t}">${t}</option>`).join("")}
-        </select></label></div><span class="key"><span><i class="dot live"></i>In progress</span><span><i class="dot"></i>Complete</span></span></div>
-      <div class="tiles">${tiles}</div>
+      <div class="index-head grid"><div class="lhs"><h2 id="idx">Projects, <span id="pcount">${shown}</span></h2>
+        <div class="filter"><span id="flabel">Type</span>
+          <div class="dd">
+            <button type="button" class="dd-btn" id="typeBtn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="flabel typeBtn"><span id="typeVal">${currentType || "All"}</span></button>
+            <ul class="dd-list" id="typeList" role="listbox" tabindex="-1" aria-labelledby="flabel" hidden>
+              ${opts.map((t, i) => `<li role="option" id="opt-${i}" data-value="${t}" aria-selected="${t === currentType}">${t || "All"}</li>`).join("")}
+            </ul>
+          </div>
+        </div></div><span class="key"><span><i class="dot live"></i>In progress</span><span><i class="dot"></i>Complete</span></span></div>
+      <div class="tiles" id="homeTiles">${tiles}</div>
     </section>
   </div>`;
 }
 
+// Related projects: ranked by how many keywords they share with this one
+const norm = (t) => t.toLowerCase();
+function related(p) {
+  const mine = new Set(p.tags.map(norm));
+  return projects
+    .filter(q => q !== p)
+    .map((q, i) => ({ q, i, shared: q.tags.filter(t => mine.has(norm(t))) }))
+    .filter(r => r.shared.length)
+    .sort((a, b) => b.shared.length - a.shared.length || (b.q.field === p.field) - (a.q.field === p.field) || a.i - b.i)
+    .slice(0, 5);
+}
+function relatedHTML(p) {
+  const r = related(p);
+  if (!r.length) return "";
+  return `
+    <section class="related" aria-labelledby="rel">
+      <div class="index-head grid"><div class="lhs"><h2 id="rel">Related projects</h2></div><span class="key">Most related first, by shared keywords</span></div>
+      <div class="tiles">${r.map(x => tileHTML(x.q, { shared: x.shared })).join("")}</div>
+    </section>`;
+}
 function projectView(p) {
   const facts = Object.entries(p.facts).map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")
     + `<div><dt>Dates</dt><dd>${p.months} ${p.year}</dd></div>`;
@@ -500,7 +547,8 @@ function projectView(p) {
       ${side}
     </div>
     <dl class="facts grid">${facts}</dl>
-    <div class="body-text grid"><h3>Summary</h3><p>${p.summary}</p>${text}</div>
+    <div class="body-text grid"><h3>Keywords</h3><ul class="kw">${p.tags.map(t => `<li>${esc(t)}</li>`).join("")}</ul><h3>Summary</h3><p>${p.summary}</p>${text}</div>
+    ${relatedHTML(p)}
   </div>`;
 }
 function aboutView() {
@@ -526,6 +574,7 @@ function artView() {
 
 // ---------- Change log (newest first; each update adds 0.01) ----------
 const CHANGELOG = [
+  { v: "1.23", date: "2026-10-22", notes: ["Filtering now fades hidden projects to black and slides the rest into place", "New black type menu", "Keywords on every project page", "Related projects bar at the bottom of each project page"] },
   { v: "1.22", date: "2026-10-22", notes: ["New bio and title on the home page", "Filter projects by type from the projects bar", "Each project now shows its month range", "Added UL-1 Fluids; N₂O feed project renamed to Lumina Fluids Bay", "Removed Launch Vehicle Qualification and Bayesian Calibration"] },
   { v: "1.21", date: "2026-10-22", notes: ["Bigger triangle on the flashing launch prompt"] },
   { v: "1.20", date: "2026-10-22", notes: ["New Dither Press cover: a dithered cat"] },
@@ -558,13 +607,89 @@ document.addEventListener("click", (e) => { const l = document.getElementById("l
 document.addEventListener("keydown", (e) => { const l = document.getElementById("log"); if (e.key === "Escape" && l.open) { l.open = false; l.querySelector("summary").focus(); } });
 
 // ---------- Project type filter ----------
-app.addEventListener("change", (e) => {
-  if (e.target.id !== "typeFilter") return;
-  const t = e.target.value;
-  let n = 0;
-  app.querySelectorAll(".tile[data-type]").forEach(el => { const show = !t || el.dataset.type === t; el.hidden = !show; if (show) n++; });
-  document.getElementById("pcount").textContent = n;
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let filterRun = 0;
+function applyFilter(t) {
+  currentType = t;
+  const grid = document.getElementById("homeTiles"); if (!grid) return;
+  const tiles = [...grid.querySelectorAll(".tile")];
+  const match = (el) => !t || el.dataset.type === t;
+  document.getElementById("pcount").textContent = tiles.filter(match).length;
+  tiles.forEach(el => el.getAnimations().forEach(an => an.cancel()));
+  if (reduceMotion) { tiles.forEach(el => { el.hidden = !match(el); }); return; }
+  const run = ++filterRun;
+  const leaving = tiles.filter(el => !el.hidden && !match(el));
+  const entering = tiles.filter(el => el.hidden && match(el));
+  const staying = tiles.filter(el => !el.hidden && match(el));
+  // 1. tiles that don't match go dark, then disappear
+  const outs = leaving.map(el => el.animate(
+    [{ filter: "brightness(1)", opacity: 1, easing: "ease-out" }, { filter: "brightness(0)", opacity: 1, offset: .45 },
+     { filter: "brightness(0)", opacity: 1, offset: .7, easing: "ease-in" }, { filter: "brightness(0)", opacity: 0 }],
+    { duration: 560, fill: "forwards" }).finished.catch(() => {}));
+  Promise.all(outs).then(() => {
+    if (run !== filterRun) return;
+    // 2. remember where the remaining tiles were, reflow, then slide them from there
+    const first = new Map(staying.map(el => [el, el.getBoundingClientRect()]));
+    leaving.forEach(el => { el.hidden = true; el.getAnimations().forEach(an => an.cancel()); });
+    entering.forEach(el => { el.hidden = false; });
+    staying.forEach((el, i) => {
+      const a = first.get(el), b = el.getBoundingClientRect();
+      const dx = a.left - b.left, dy = a.top - b.top;
+      if (dx || dy) el.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }],
+        { duration: 560, easing: "cubic-bezier(0.645, 0.045, 0.355, 1)", delay: i * 35 });
+    });
+    // 3. newly matching tiles come up out of black
+    entering.forEach((el, i) => el.animate(
+      [{ filter: "brightness(0)", opacity: 0 }, { filter: "brightness(0)", opacity: 1, offset: .35 }, { filter: "brightness(1)", opacity: 1 }],
+      { duration: 560, easing: "ease-out", delay: 140 + i * 45, fill: "backwards" }));
+  });
+}
+
+// ---------- Dropdown (listbox) ----------
+function ddParts() { return { btn: document.getElementById("typeBtn"), list: document.getElementById("typeList") }; }
+function ddOpen() {
+  const { btn, list } = ddParts(); if (!list) return;
+  list.hidden = false; btn.setAttribute("aria-expanded", "true");
+  const sel = list.querySelector('[aria-selected="true"]') || list.firstElementChild;
+  ddActivate(sel); list.focus();
+}
+function ddClose(focusBtn) {
+  const { btn, list } = ddParts(); if (!list || list.hidden) return;
+  list.hidden = true; btn.setAttribute("aria-expanded", "false");
+  if (focusBtn) btn.focus();
+}
+function ddActivate(li) {
+  const { list } = ddParts();
+  list.querySelectorAll("li").forEach(x => x.classList.toggle("active", x === li));
+  list.setAttribute("aria-activedescendant", li.id);
+}
+function ddChoose(li) {
+  const { list } = ddParts();
+  list.querySelectorAll("li").forEach(x => x.setAttribute("aria-selected", String(x === li)));
+  document.getElementById("typeVal").textContent = li.textContent;
+  ddClose(true);
+  if (li.dataset.value !== currentType) applyFilter(li.dataset.value);
+}
+app.addEventListener("click", (e) => {
+  if (e.target.closest("#typeBtn")) { const { list } = ddParts(); list.hidden ? ddOpen() : ddClose(true); return; }
+  const li = e.target.closest("#typeList li"); if (li) ddChoose(li);
 });
+app.addEventListener("mousemove", (e) => { const li = e.target.closest("#typeList li"); if (li) ddActivate(li); });
+app.addEventListener("keydown", (e) => {
+  if (e.target.id === "typeBtn" && (e.key === "ArrowDown" || e.key === "ArrowUp")) { e.preventDefault(); ddOpen(); return; }
+  if (e.target.id !== "typeList") return;
+  const items = [...e.target.querySelectorAll("li")];
+  const i = items.findIndex(x => x.classList.contains("active"));
+  const go = (n) => { e.preventDefault(); ddActivate(items[(n + items.length) % items.length]); };
+  if (e.key === "ArrowDown") go(i + 1);
+  else if (e.key === "ArrowUp") go(i - 1);
+  else if (e.key === "Home") go(0);
+  else if (e.key === "End") go(items.length - 1);
+  else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); ddChoose(items[i]); }
+  else if (e.key === "Escape") { e.preventDefault(); ddClose(true); }
+  else if (e.key === "Tab") ddClose(false);
+});
+document.addEventListener("click", (e) => { if (!e.target.closest(".dd")) ddClose(false); });
 
 // ---------- Router ----------
 const routes = { about: aboutView, art: artView };
