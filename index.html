@@ -118,8 +118,9 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 .tile.sliding .tile-in { will-change: transform; }
 .tile .art { position: relative; aspect-ratio: 1; max-width: 100%; overflow: hidden; background: var(--ink); color: var(--paper); display: grid; place-items: center; }
 .tile .art > svg { width: 68%; height: 68%; }
-.tile .art > img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; display: block; }
-.tile .art > svg, .tile .art > img { transition: transform 420ms ease; }
+.tile .art > img { position: absolute; inset: -1px; width: calc(100% + 2px); height: calc(100% + 2px); max-width: none; object-fit: cover; image-rendering: pixelated; display: block; }
+.tile .art:has(> img), .p-art:has(img) { background: #000; }
+.tile .art > svg { transition: transform 420ms ease; }
 .tile .reveal {
   position: absolute; inset: 0; color: #000;
   background: color-mix(in srgb, var(--signal) 88%, transparent);
@@ -148,7 +149,7 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
   .tile:hover .reveal, .tile:focus-visible .reveal { opacity: 1; }
   .tile:hover .reveal p, .tile:focus-visible .reveal p { transform: none; filter: none; }
   .tile:hover .reveal span, .tile:focus-visible .reveal span { opacity: 1; }
-  .tile:hover .art > svg, .tile:hover .art > img, .tile:focus-visible .art > svg, .tile:focus-visible .art > img { transform: scale(1.04); }
+  .tile:hover .art > svg, .tile:focus-visible .art > svg { transform: scale(1.04); }
   .tile .name .roll { transition: transform 420ms var(--ease-roll); transition-delay: calc(var(--i) * 14ms); }
   .tile:hover .name .roll, .tile:focus-visible .name .roll { transform: translateY(-1.42em); }
   .tile .field { transition: color 150ms ease; }
@@ -192,6 +193,7 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 .p-art { position: relative; aspect-ratio: 1; max-width: 100%; overflow: hidden; background: var(--ink); color: var(--paper); display: block; }
 .p-art .pa-img { position: absolute; inset: 0; display: grid; place-items: center; }
 .p-art .pa-img svg { width: 66%; height: 66%; }
+.p-art .pa-img { inset: -1px; }
 .p-art .pa-img img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; display: block; }
 .tile .art > img.smooth, .p-art .pa-img img.smooth { image-rendering: auto; }
 .p-art .pa-veil { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; background: color-mix(in srgb, var(--signal) 88%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); color: #000; }
@@ -202,12 +204,12 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 .p-art .pa-hint { display: flex; align-items: center; justify-content: center; gap: .35em; }
 .p-art .pa-hint .tri { font-size: 1.6em; line-height: .6; }
 @media (hover: hover) and (pointer: fine) {
-  .p-art .pa-img { transition: transform 420ms ease; }
+  .p-art .pa-img svg { transition: transform 420ms ease; }
   .p-art .pa-veil { transition: opacity 380ms ease; }
   .p-art .pa-go { transition: filter 480ms var(--ease-out) 60ms, transform 480ms var(--ease-out) 60ms; }
   .p-art .pa-go .ne { transition: transform 260ms var(--ease-out) 200ms; }
   .p-art .pa-hint { transition: opacity 150ms ease; }
-  a.p-art:hover .pa-img, a.p-art:focus-visible .pa-img { transform: scale(1.05); }
+  a.p-art:hover .pa-img svg, a.p-art:focus-visible .pa-img svg { transform: scale(1.05); }
   a.p-art:hover .pa-veil, a.p-art:focus-visible .pa-veil { opacity: 1; }
   a.p-art:hover .pa-go, a.p-art:focus-visible .pa-go { filter: none; transform: none; }
   a.p-art:hover .pa-go .ne, a.p-art:focus-visible .pa-go .ne { transform: translate(3px, -3px); }
@@ -582,6 +584,7 @@ function artView() {
 
 // ---------- Change log (newest first; each update adds 0.01) ----------
 const CHANGELOG = [
+  { v: "1.26", date: "2026-10-22", notes: ["Fixed a thin light line on the right edge of project covers when hovering off"] },
   { v: "1.25", date: "2026-10-22", notes: ["Filtered projects slide in one at a time", "Keywords are lowercase, with new lifecycle and slosh tags", "Keyword lists stop at two lines and fade out at the edge"] },
   { v: "1.24", date: "2026-10-22", notes: ["Filtering now slides projects up and out, then slides the filtered set up into place", "Large titles no longer clip the edges of letters", "No more edge showing when you hover off a project"] },
   { v: "1.23", date: "2026-10-22", notes: ["Filtering now fades hidden projects to black and slides the rest into place", "New black type menu", "Keywords on every project page", "Related projects bar at the bottom of each project page"] },
