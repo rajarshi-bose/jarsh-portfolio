@@ -187,25 +187,29 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 .related { margin-top: clamp(64px, 9vw, 120px); }
 .related .key { color: var(--muted); }
 .tile .shared { color: var(--muted); }
-.p-head { display: grid; grid-template-columns: minmax(0, 1fr) clamp(130px, 14vw, 190px); gap: clamp(20px, 4vw, 56px); align-items: start; }
+.p-head { display: grid; grid-template-columns: minmax(0, 1fr) auto clamp(130px, 14vw, 190px); column-gap: clamp(16px, 2vw, 24px); align-items: start; }
+.p-head > div:first-child { padding-right: clamp(4px, 2vw, 32px); }
 .p-meta { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 22px 0 0; font-size: 1.05rem; color: var(--muted); }
 .p-meta b { color: var(--ink); font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-left: 6px; }
 .p-side { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; min-width: 0; }
 .p-meta { align-items: center; }
-.report-btn {
-  display: inline-flex; align-items: center; gap: .4em; padding: 7px 13px;
-  background: var(--ink); color: var(--paper); font-weight: 700; font-size: .95rem; letter-spacing: -.01em;
-  transition: background-color 150ms ease, color 150ms ease;
+.p-actions { display: flex; flex-direction: column; gap: 8px; min-width: 176px; }
+.act-btn {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 9px 13px;
+  font: 700 .95rem/1.2 var(--font); letter-spacing: -.01em; text-align: left; cursor: pointer;
+  color: var(--ink); background: transparent; border: 1px solid var(--ink);
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
 }
-.report-btn .dn { display: inline-block; transition: transform 200ms var(--ease-out); }
-.report-btn:hover, .report-btn:focus-visible { background: var(--signal); color: #000; }
-.report-btn:hover .dn, .report-btn:focus-visible .dn { transform: translateY(2px); }
-.report-btn:active { transform: scale(.97); }
-@media (prefers-reduced-motion: reduce) { .report-btn, .report-btn .dn { transition: none; } }
+.p-actions .act-btn:first-child { background: var(--ink); color: var(--paper); }
+.act-btn .ar { display: inline-block; transition: transform 200ms var(--ease-out); }
+.act-btn:not(.off):hover, .act-btn:not(.off):focus-visible { background: var(--signal); border-color: var(--signal); color: #000; }
+.act-btn:not(.off):hover .ne, .act-btn:not(.off):focus-visible .ne { transform: translate(2px, -2px); }
+.act-btn:not(.off):hover .dn, .act-btn:not(.off):focus-visible .dn { transform: translateY(2px); }
+.act-btn:not(.off):active { transform: scale(.97); }
+.act-btn.off, .p-actions .act-btn.off:first-child { cursor: not-allowed; color: var(--muted); background: transparent; border-color: var(--faint); }
+@media (prefers-reduced-motion: reduce) { .act-btn, .act-btn .ar { transition: none; } }
 .p-art { position: relative; aspect-ratio: 1; width: 100%; max-width: 100%; overflow: hidden; background: var(--ink); color: var(--paper); display: block; }
 button.p-art { border: 0; padding: 0; margin: 0; font: inherit; cursor: pointer; }
-.gal-link { font: 600 .95rem var(--font); color: var(--ink); background: none; border: 0; border-bottom: 1px solid var(--ink); padding: 0 0 1px; cursor: pointer; transition: color 150ms ease, border-color 150ms ease; }
-.gal-link:hover { color: var(--signal); border-color: var(--signal); }
 .p-art .pa-img { position: absolute; inset: 0; display: grid; place-items: center; }
 .p-art .pa-img svg { width: 66%; height: 66%; }
 .p-art .pa-img { inset: -1px; }
@@ -316,7 +320,9 @@ footer .col b { display: block; color: var(--ink); font-weight: 600; }
   .facts div { grid-column: span 6; }
   .body-text h3, .body-text p, .kw { grid-column: 1 / 13; }
   .slot { grid-column: span 6; }
-  .p-head { grid-template-columns: minmax(0, 1fr); }
+  .p-head { grid-template-columns: minmax(0, 1fr); row-gap: 20px; }
+  .p-actions { order: 2; flex-direction: row; flex-wrap: wrap; min-width: 0; }
+  .p-head > div:first-child { padding-right: 0; }
   .p-side { order: -1; }
   .p-art { width: 132px; }
   .p-art .pa-hint { font-size: .72rem; left: 6px; right: 6px; bottom: 6px; padding: 5px 4px; }
@@ -530,7 +536,7 @@ const projects = [
   { id: "food-plotter", gallery: [{"caption": "Foods plotted by cost, portion size and taste"}], tags: ["tool", "web development", "data visualization", "3d"], months: "Oct – Present", year: 2026, title: "Food Plotter", field: "Tool", status: "In progress", img: IMG.fp, launch: "https://jarsh.us/food-plotter/",
     summary: "Plot foods in a rotatable 3D space by cost, portion size, and taste.",
     facts: { Axes: "Cost, portion, taste", Saving: "In your browser", Role: "Designer & developer" }, text: [] },
-  { id: "jarsh-us", report: "reports/jarsh-us-development-report.pdf",
+  { id: "jarsh-us", launch: "https://jarsh.us/", report: "reports/jarsh-us-development-report.pdf",
     gallery: [{"src": "img/gallery/jarsh-us/home.png", "smooth": true, "caption": "Home: the name sets in letter by letter above a 12-column grid"},
               {"src": "img/gallery/jarsh-us/index.png", "smooth": true, "caption": "Project index with the type menu open and status dots"},
               {"src": "img/gallery/jarsh-us/project.png", "smooth": true, "caption": "Project page: title, facts, keywords and the gallery prompt"},
@@ -637,24 +643,32 @@ function projectView(p) {
     : `<h3>Overview</h3><p class="draft">Write a few lines on how it works and how you built it.</p>`;
   const art = `<span class="pa-img">${p.img ? `<img src="${p.img}" alt=""${p.smooth ? ' class="smooth"' : ""}>` : icons[p.icon]}</span>`;
   const n = galleryOf(p).length, imgs = `${n} image${n === 1 ? "" : "s"}`;
+  // Image square: still launches or opens the gallery on click, with the hover label but no blinking sign
   const side = `<div class="p-side">` + (p.launch
-    ? `<a class="p-art act" href="${p.launch}" target="_blank" rel="noopener" aria-label="Launch ${esc(p.title)} (opens in a new tab)">${art}
-         <span class="pa-veil" aria-hidden="true"><span class="pa-go">Launch<span class="ne">↗</span></span></span>
-         <span class="pa-hint" aria-hidden="true"><span class="tri">▸</span>Click to launch</span></a>
-       ${n ? `<button type="button" class="gal-link" data-gallery="${p.id}">View gallery, ${imgs}</button>` : ""}`
+    ? `<a class="p-art act" href="${p.launch}" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">${art}
+         <span class="pa-veil"><span class="pa-go">Launch<span class="ne">↗</span></span></span></a>`
     : n
-    ? `<button type="button" class="p-art act" data-gallery="${p.id}" aria-label="Open the ${esc(p.title)} gallery, ${imgs}">${art}
-         <span class="pa-veil" aria-hidden="true"><span class="pa-go">Gallery<span class="ne">↗</span></span></span>
-         <span class="pa-hint" aria-hidden="true"><span class="tri">▸</span>Click for images</span></button>`
+    ? `<button type="button" class="p-art act" data-gallery="${p.id}" tabindex="-1" aria-hidden="true">${art}
+         <span class="pa-veil"><span class="pa-go">Gallery<span class="ne">↗</span></span></span></button>`
     : `<div class="p-art" aria-hidden="true">${art}</div>`) + `</div>`;
+  // Action column, left of the image: Launch (apps), Download Report, View Gallery
+  const report = p.report
+    ? `<a class="act-btn" href="${p.report}" download>Download Report<span class="ar dn" aria-hidden="true">↓</span></a>`
+    : `<span class="act-btn off" role="link" aria-disabled="true" title="Report coming soon">Download Report<span class="ar dn" aria-hidden="true">↓</span></span>`;
+  const actions = `<div class="p-actions">`
+    + (p.launch ? `<a class="act-btn" href="${p.launch}" target="_blank" rel="noopener" aria-label="Launch ${esc(p.title)} (opens in a new tab)">Launch<span class="ar ne" aria-hidden="true">↗</span></a>` : "")
+    + report
+    + (n ? `<button type="button" class="act-btn" data-gallery="${p.id}" aria-label="View gallery, ${imgs}">View Gallery<span class="ar ne" aria-hidden="true">↗</span></button>` : "")
+    + `</div>`;
   return `
   <div class="page inner">
     <a class="back" href="#" data-route=""><span class="arr" aria-hidden="true">←</span>Back to work</a>
     <div class="p-head">
       <div>
         <h1 class="intro" id="intro" aria-label="${esc(p.title)}"><span aria-hidden="true">${letters(p.title, false)}</span></h1>
-        <p class="p-meta">${p.report ? `<a class="report-btn" href="${p.report}" download>Download Report<span class="dn" aria-hidden="true">↓</span></a>` : ""}<span>Project type:<b>${p.field}</b></span><span>Status:<b><i class="dot${p.status === "Complete" ? "" : " live"}"></i>${p.status}</b></span></p>
+        <p class="p-meta"><span>Project type:<b>${p.field}</b></span><span>Status:<b><i class="dot${p.status === "Complete" ? "" : " live"}"></i>${p.status}</b></span></p>
       </div>
+      ${actions}
       ${side}
     </div>
     <dl class="facts grid">${facts}</dl>
@@ -685,6 +699,7 @@ function artView() {
 
 // ---------- Change log (newest first; each update adds 0.01) ----------
 const CHANGELOG = [
+  { v: "1.37", date: "2026-10-23", notes: ["Project pages have an action column left of the image: Launch for apps, Download Report, and View Gallery", "Removed the blinking launch and gallery signs"] },
   { v: "1.36", date: "2026-10-23", notes: ["The jarsh.us report is now a dark brand and build guide, with full specs for keeping new pages and apps on brand"] },
   { v: "1.35", date: "2026-10-23", notes: ["Added jarsh.us as a project, with a gallery of the site", "Download Report button on project pages that have a report, starting with jarsh.us"] },
   { v: "1.34", date: "2026-10-22", notes: ["Removed cover art from project galleries"] },
