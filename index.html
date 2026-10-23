@@ -190,7 +190,11 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 .p-head { display: grid; grid-template-columns: minmax(0, 1fr) clamp(130px, 14vw, 190px); gap: clamp(20px, 4vw, 56px); align-items: start; }
 .p-meta { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 22px 0 0; font-size: 1.05rem; color: var(--muted); }
 .p-meta b { color: var(--ink); font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-left: 6px; }
-.p-art { position: relative; aspect-ratio: 1; max-width: 100%; overflow: hidden; background: var(--ink); color: var(--paper); display: block; }
+.p-side { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; min-width: 0; }
+.p-art { position: relative; aspect-ratio: 1; width: 100%; max-width: 100%; overflow: hidden; background: var(--ink); color: var(--paper); display: block; }
+button.p-art { border: 0; padding: 0; margin: 0; font: inherit; cursor: pointer; }
+.gal-link { font: 600 .95rem var(--font); color: var(--ink); background: none; border: 0; border-bottom: 1px solid var(--ink); padding: 0 0 1px; cursor: pointer; transition: color 150ms ease, border-color 150ms ease; }
+.gal-link:hover { color: var(--signal); border-color: var(--signal); }
 .p-art .pa-img { position: absolute; inset: 0; display: grid; place-items: center; }
 .p-art .pa-img svg { width: 66%; height: 66%; }
 .p-art .pa-img { inset: -1px; }
@@ -203,21 +207,67 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 @keyframes hint { 50% { opacity: 0; } }
 .p-art .pa-hint { display: flex; align-items: center; justify-content: center; gap: .35em; }
 .p-art .pa-hint .tri { font-size: 1.6em; line-height: .6; }
+.p-art .pa-hint { white-space: nowrap; }
 @media (hover: hover) and (pointer: fine) {
   .p-art .pa-img { transition: transform 420ms ease; }
   .p-art .pa-veil { transition: opacity 380ms ease; }
   .p-art .pa-go { transition: filter 480ms var(--ease-out) 60ms, transform 480ms var(--ease-out) 60ms; }
   .p-art .pa-go .ne { transition: transform 260ms var(--ease-out) 200ms; }
   .p-art .pa-hint { transition: opacity 150ms ease; }
-  a.p-art:hover .pa-img, a.p-art:focus-visible .pa-img { transform: scale(1.05); }
-  a.p-art:hover .pa-veil, a.p-art:focus-visible .pa-veil { opacity: 1; }
-  a.p-art:hover .pa-go, a.p-art:focus-visible .pa-go { filter: none; transform: none; }
-  a.p-art:hover .pa-go .ne, a.p-art:focus-visible .pa-go .ne { transform: translate(3px, -3px); }
-  a.p-art:hover .pa-hint, a.p-art:focus-visible .pa-hint { animation: none; opacity: 0; }
+  .p-art.act:hover .pa-img, .p-art.act:focus-visible .pa-img { transform: scale(1.05); }
+  .p-art.act:hover .pa-veil, .p-art.act:focus-visible .pa-veil { opacity: 1; }
+  .p-art.act:hover .pa-go, .p-art.act:focus-visible .pa-go { filter: none; transform: none; }
+  .p-art.act:hover .pa-go .ne, .p-art.act:focus-visible .pa-go .ne { transform: translate(3px, -3px); }
+  .p-art.act:hover .pa-hint, .p-art.act:focus-visible .pa-hint { animation: none; opacity: 0; }
 }
-a.p-art:active { transform: scale(.98); }
+.p-art.act:active { transform: scale(.98); }
 .slots { margin-top: 48px; row-gap: var(--gutter); }
 .slot { grid-column: span 4; aspect-ratio: 4 / 5; max-width: 100%; border: 1px solid var(--faint); display: grid; place-items: end start; padding: 12px; color: var(--muted); font-size: .9rem; }
+
+/* ---------- Gallery window ---------- */
+.gal { padding: 0; border: 0; margin: auto; background: transparent; color: var(--ink); overflow: visible;
+  width: min(1180px, calc(100vw - 32px)); height: min(760px, calc(100dvh - 32px)); max-width: none; max-height: none; }
+.gal::backdrop { background: rgba(0, 0, 0, .74); }
+.gal[open] .gal-win { animation: galIn 280ms var(--ease-out); }
+@keyframes galIn { from { opacity: 0; transform: translateY(12px) scale(.985); } }
+.gal-win { width: 100%; height: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 330px; background: var(--paper); border: 2px solid var(--rule); }
+.gal-stage { position: relative; min-width: 0; min-height: 0; background: #000; overflow: hidden; }
+.gal-media { position: absolute; inset: 0; display: grid; place-items: center; padding: clamp(12px, 2.4vw, 32px) clamp(56px, 5vw, 72px); }
+.gal-media img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; image-rendering: pixelated; animation: galImg 260ms ease; }
+.gal-media img.smooth { image-rendering: auto; }
+@keyframes galImg { from { opacity: 0; } }
+.gal-ph { width: min(86%, 560px); aspect-ratio: 4 / 3; max-height: 100%; border: 1px dashed #77726a; display: grid; place-items: center; color: #9a958b; font-weight: 600; animation: galImg 260ms ease; }
+.gal-nav { position: absolute; top: 50%; translate: 0 -50%; width: 44px; height: 44px; border: 0; background: #f1efe9; color: #000; font: 700 1.2rem var(--font); cursor: pointer; transition: background-color 150ms ease; }
+.gal-nav:hover { background: var(--signal); }
+.gal-nav:active { scale: .96; }
+.gal-nav.prev { left: 12px; } .gal-nav.next { right: 12px; }
+.gal-count { position: absolute; left: 12px; bottom: 12px; padding: 4px 8px; background: rgba(0, 0, 0, .6); color: #f1efe9; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.gal-side { display: flex; flex-direction: column; min-width: 0; min-height: 0; border-left: 2px solid var(--rule); }
+.gal-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 16px 18px 12px; border-bottom: 1px solid var(--rule); }
+.gal-top h2 { margin: 0; font-size: 1.3rem; font-weight: 800; letter-spacing: -.025em; line-height: 1.1; }
+.gal-close { flex: none; font: 600 .95rem var(--font); color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; transition: color 150ms ease; }
+.gal-close:hover { color: var(--signal); }
+.gal-cap { margin: 0; padding: 16px 18px 18px; min-height: 5.4em; font-size: 1.15rem; line-height: 1.32; font-weight: 500; letter-spacing: -.01em; border-bottom: 1px solid var(--faint); text-wrap: pretty; }
+.gal-cap .soon { display: block; margin-top: 8px; font-size: .85rem; color: var(--muted); }
+.gal-list { list-style: none; margin: 0; padding: 6px 0 10px; overflow-y: auto; flex: 1; }
+.gal-list button { display: grid; grid-template-columns: 2em minmax(0, 1fr); gap: 6px; width: 100%; text-align: left; padding: 9px 18px; border: 0; background: none; color: var(--muted); font: 500 .92rem/1.35 var(--font); cursor: pointer; transition: color 150ms ease; }
+.gal-list button:hover { color: var(--ink); }
+.gal-list button[aria-current="true"] { color: var(--ink); font-weight: 700; }
+.gal-list button[aria-current="true"] .num { color: var(--signal); }
+.gal-list .num { font-variant-numeric: tabular-nums; }
+.gal-list .tc { font-weight: 500; font-size: .8rem; color: var(--muted); }
+@media (max-width: 760px) {
+  .gal { width: 100vw; height: 100dvh; }
+  .gal-win { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 52%) minmax(0, 1fr); border: 0; }
+  .gal-side { border-left: 0; border-top: 2px solid var(--rule); }
+  .gal-top { padding-top: 14px; }
+  .gal-media { padding: 12px 52px; }
+  .gal-nav { width: 38px; height: 38px; }
+  .gal-nav.prev { left: max(8px, env(safe-area-inset-left, 0px)); } .gal-nav.next { right: max(8px, env(safe-area-inset-right, 0px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gal[open] .gal-win, .gal-media img, .gal-ph { animation: none; }
+}
 
 /* ---------- Footer ---------- */
 footer { margin-top: clamp(80px, 12vw, 160px); }
@@ -256,7 +306,8 @@ footer .col b { display: block; color: var(--ink); font-weight: 600; }
   .body-text h3, .body-text p, .kw { grid-column: 1 / 13; }
   .slot { grid-column: span 6; }
   .p-head { grid-template-columns: minmax(0, 1fr); }
-  .p-art { width: 132px; order: -1; }
+  .p-side { order: -1; }
+  .p-art { width: 132px; }
   .p-art .pa-hint { font-size: .72rem; left: 6px; right: 6px; bottom: 6px; padding: 5px 4px; }
   footer .big { grid-column: 1 / 13; }
   footer .col { grid-column: span 4; }
@@ -297,6 +348,22 @@ footer .col b { display: block; color: var(--ink); font-weight: 600; }
 </header>
 
 <main id="app"></main>
+
+<dialog class="gal" id="gal" aria-labelledby="galTitle">
+  <div class="gal-win">
+    <div class="gal-stage">
+      <div class="gal-media" id="galMedia"></div>
+      <button type="button" class="gal-nav prev" id="galPrev" aria-label="Previous image">←</button>
+      <button type="button" class="gal-nav next" id="galNext" aria-label="Next image">→</button>
+      <span class="gal-count" id="galCount" aria-hidden="true"></span>
+    </div>
+    <aside class="gal-side">
+      <div class="gal-top"><h2 id="galTitle"></h2><button type="button" class="gal-close" id="galClose">Close ✕</button></div>
+      <p class="gal-cap" id="galCap" aria-live="polite"></p>
+      <ol class="gal-list" id="galList" aria-label="All images"></ol>
+    </aside>
+  </div>
+</dialog>
 
 <footer>
   <div class="page grid">
@@ -422,33 +489,33 @@ const icons = {
 
 const IMG = { tyt: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAABd0lEQVR42u1UsXHDMAyEeKpSqOYE5ACu0msIDaAV3GaBrOABPIR6zyBNkFqFK5+TAjQNAgQl21GTC46FTgTweODByjkHW5qBje13AC6frgRQuGY2Hr7wZG9P56uENGuqiNnlN0bV+wkA3t8Mg0kA0IldJzbM+e+i1Y81O+Ztm8vO1fsJy4qEfG+RB/4HgCor09P5in5Ji7oJ2iYi+aOTrUOMZ1QUJjTM4USkpdaZlakD5bYJhyXKAtMZ0CaunAEcyX/SOgDLAZj+ShhaIg04MKDUSCSOOurheQYyUkroNQbFEvgM0HM1AzN2U1kGeQZ0cjS7CDd3J6E/2qiQTkg+2TIp3ztAkUGShXkySG0PZBOTzaCRst10wsM8HpI3o/r+4F32veUvfvbtjA3RZ+B7qzDgm6GkkxoVK1WrQmZhWjoJmabS90BWmvFcYDB2M5nB7cL3NiyHLr6FphGHGwCTl5xBgQGDTB0yDLKFvMxgqZB/Bn+DwTb2A2p0TTG9DNbXAAAAAElFTkSuQmCC", iom: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAC40lEQVR42rVWTUgbQRR+uqlurHG7xtSV0LinLSGgC9JrK5TgofTQS6+FXgvSc+8Wei31Wui1FqSHHoqX4LGlkFg0GHpIYiWrG2N+m00w2MMnw7iTbExrhrBM3jy+9/O992ZGDMOgYa5RGvK6ZCA8vzRcA4e5H67jTCazoDUXtKbkWJJjFQvZa07RufVueTGE/dGpQ0SSY4lqHqGPeJO8oDWJaDdbAfqsKsd0hYh2LP8VI/CJIvgIIKC7FJYXQztW3aWfzleJSHT3UoqKhSy097693nhlsuSk89VSrT2rykxzf3sV0NBHfODMlTcpGAwy0Z96edLvI6IX987WvxwmUjbcL1Za+IaUcbvc+r5fouNcs1Gxyy2gl2ptBnJycgLMWqXQhWT4AnRewq+YrrBTBDcYB0S0/vlXTFc+bR8QUTQyheQgy/jytqORKWasfxWh0mdVWdQGkEsOYUxX+FroyFrPPpiZ00u1dldfepmM6cryYohVHY/eM0VXX0CPmyr+iv3hE2dDLyz4yzIO6ETKjpuq8egJ0SYR8f3RP4JoZIpPSzpf5SXpfBV530qeEm1uJU8TKZvI70Wyh/tdTULC97yLgO4RTAfGsGEFzsjsSjjiwGkmk3GV5WhXdBT+dGCMGWNTiDeDVkA3iCPrYlLxo+K8XcOm4ZzBTMM507WbfLU8NIM/c4293EUE/nEJ+vj5x6XfhWMe0+dqAsmxMFumA2NwDdnoyNrGx+dEtL72XkwmCxqbjgcHHVmbmaOZOd4qd5z8GjfVRMpmbJdqbZ5nMVcjA70qVlcm2Yjlew30EFEiZbt67RIHfVezUWE1c/uWjHFtl1tPH9yJm+rLD8Wj+o3BrkzxpmOEY4+5vfbMMMITZK7cvf/Wqw/C80viw8LVySzLKKq4qRrhCSIic+VfLn2xyfmmY44Tkej7f03T3WwlpiuP3xzghvbQHKyKEAeCEMfONRjou0QWr/nxK9bI0F/XfwH7uXilw6XiTQAAAABJRU5ErkJggg==", dp: "img/dither-press-cover.png", fp: "img/food-plotter-cover.png" };
 const projects = [
-  { id: "pyroshock-resonant-bar", tags: ["los alamos", "simulation", "explicit dynamics", "fea", "abaqus", "pyroshock", "research", "technical writing"], months: "Jun – Aug", year: 2026, title: "Resonant Bar Pyroshock", field: "Simulation", status: "In progress", icon: "bar",
+  { id: "pyroshock-resonant-bar", gallery: [{"caption": "Resonant bar test setup in the lab"}, {"caption": "Explicit dynamics model of the bar in Abaqus"}, {"caption": "Shock response: test data compared with the model"}], tags: ["los alamos", "simulation", "explicit dynamics", "fea", "abaqus", "pyroshock", "research", "technical writing"], months: "Jun – Aug", year: 2026, title: "Resonant Bar Pyroshock", field: "Simulation", status: "In progress", icon: "bar",
     summary: "Resonant bar setups that reproduce pyroshock environments for qualifying flight hardware, modeled in Abaqus at Los Alamos.",
     facts: { Organization: "Los Alamos National Laboratory", Program: "LADSS", Tools: "Abaqus / Explicit" },
     text: [["Overview", "Pyrotechnic events produce short, high-frequency shock loads that can damage nearby hardware. Resonant bar fixtures let a lab recreate those loads on the bench. This project looks at how bar geometry and excitation shape the shock response a test article sees."],
            ["What I did", "Built explicit dynamics finite element models of the bar setup in Abaqus and compared simulated response against test data. The work is being written up as a paper."]] },
-  { id: "fsae-fuel-lube", tags: ["formula sae", "fluid systems", "hardware", "fuel systems", "slosh", "packaging constraints", "sustained g events", "lifecycle", "end to end"], months: "Aug – Present", year: 2026, title: "Formula SAE Fuel System", field: "Hardware", status: "In progress", icon: "fsae",
+  { id: "fsae-fuel-lube", gallery: [{"caption": "Baffled fuel tank, CAD"}, {"caption": "Fuel and oil plumbing installed on the car"}, {"caption": "Pump pickup during slosh testing"}], tags: ["formula sae", "fluid systems", "hardware", "fuel systems", "slosh", "packaging constraints", "sustained g events", "lifecycle", "end to end"], months: "Aug – Present", year: 2026, title: "Formula SAE Fuel System", field: "Hardware", status: "In progress", icon: "fsae",
     summary: "A baffled fuel tank and modular plumbing for a KTM 690 that keeps pump pickup through 1.5 g of slosh.",
     facts: { Team: "TAMU Formula SAE IC", Role: "Fuel systems engineer", Scope: "Feed, lube, overpressure" },
     text: [["Overview", "The fuel and oil systems have to keep pressure stable through hard cornering, braking, and acceleration, while staying light and passing technical inspection."]] },
-  { id: "lumina-fluids-bay", tags: ["lumina launch vehicle", "fluid systems", "hardware", "lifecycle", "end to end", "responsible engineer", "shifting scopes", "packaging constraints"], months: "Jun – Present", year: 2026, title: "Lumina Fluids Bay", field: "Hardware", status: "In progress", icon: "feed",
+  { id: "lumina-fluids-bay", gallery: [{"caption": "Fluids bay layout, CAD"}, {"caption": "Fluids bay hardware during assembly"}, {"caption": "Fluids bay installed in the vehicle"}], tags: ["lumina launch vehicle", "fluid systems", "hardware", "lifecycle", "end to end", "responsible engineer", "shifting scopes", "packaging constraints"], months: "Jun – Present", year: 2026, title: "Lumina Fluids Bay", field: "Hardware", status: "In progress", icon: "feed",
     summary: "Feed system design for a liquid rocket engine running self-pressurizing nitrous oxide.",
     facts: { Type: "Bipropellant liquid engine", Oxidizer: "Nitrous oxide", Focus: "Feed system" },
     text: [["Overview", "Nitrous oxide is self-pressurizing, which simplifies the feed system but makes two-phase flow and tank pressure collapse real design concerns."]] },
-  { id: "ul-1-fluids", tags: ["lumina launch vehicle", "fluid systems", "hardware", "lifecycle", "tube bending", "hands-on", "end to end"], months: "Jan – May", year: 2026, title: "UL-1 Fluids", field: "Hardware", status: "Complete", icon: "tank",
+  { id: "ul-1-fluids", gallery: [{"caption": "Bent and fitted fluid lines"}, {"caption": "Fluids hardware installed on UL-1"}], tags: ["lumina launch vehicle", "fluid systems", "hardware", "lifecycle", "tube bending", "hands-on", "end to end"], months: "Jan – May", year: 2026, title: "UL-1 Fluids", field: "Hardware", status: "Complete", icon: "tank",
     summary: "Fluid system hardware for the UL-1 launch vehicle.",
     facts: { Focus: "Vehicle fluid systems" },
     text: [] },
-  { id: "ten-year-tape", tags: ["game", "web development", "multiplayer", "game design", "end to end"], months: "Sep – Oct", year: 2026, title: "Ten Year Tape", field: "Game", status: "Complete", img: IMG.tyt, launch: "https://jarsh.us/ten-year-tape/",
+  { id: "ten-year-tape", gallery: [{"src": "img/gallery/ten-year-tape/intro.png", "smooth": true, "caption": "Intro: the board before the market opens"}, {"src": "img/gallery/ten-year-tape/lobby.png", "smooth": true, "caption": "Lobby: players join a room before the game starts"}, {"src": "img/gallery/ten-year-tape/gameplay.png", "smooth": true, "caption": "Live trading: ten disguised companies and three index funds, with the news tape, order ticket, holdings and leaderboard"}, {"src": "img/gallery/ten-year-tape/closing-bell.png", "smooth": true, "caption": "Closing bell: the decade and the real companies are revealed"}], tags: ["game", "web development", "multiplayer", "game design", "end to end"], months: "Sep – Oct", year: 2026, title: "Ten Year Tape", field: "Game", status: "Complete", img: IMG.tyt, launch: "https://jarsh.us/ten-year-tape/",
     summary: "A multiplayer stock trading game played over a compressed decade of market tape.",
     facts: { Genre: "Stock trading", Players: "Multiplayer", Role: "Designer & developer" }, text: [] },
-  { id: "isle-of-man", tags: ["game", "web development", "pixel art", "simulation", "game design"], months: "Oct – Present", year: 2026, title: "Isle of Man", field: "Game", status: "In progress", img: IMG.iom, launch: "https://jarsh.us/isle-of-man/",
+  { id: "isle-of-man", gallery: [{"src": null, "caption": "Isle of Man cover art"}, {"caption": "A growing city on the island"}], tags: ["game", "web development", "pixel art", "simulation", "game design"], months: "Oct – Present", year: 2026, title: "Isle of Man", field: "Game", status: "In progress", img: IMG.iom, launch: "https://jarsh.us/isle-of-man/",
     summary: "A pixel-art city builder set on a small island.",
     facts: { Genre: "City builder", Style: "Pixel art", Role: "Designer & developer" }, text: [] },
-  { id: "dither-press", tags: ["tool", "web development", "image processing", "pixel art", "end to end"], months: "Oct", year: 2026, title: "Dither Press", field: "Tool", status: "Complete", img: IMG.dp, smooth: true, launch: "https://jarsh.us/dither-press/",
+  { id: "dither-press", gallery: [{"src": null, "smooth": true, "caption": "A cat photo, dithered in Dither Press"}, {"caption": "The Dither Press editor and its controls"}], tags: ["tool", "web development", "image processing", "pixel art", "end to end"], months: "Oct", year: 2026, title: "Dither Press", field: "Tool", status: "Complete", img: IMG.dp, smooth: true, launch: "https://jarsh.us/dither-press/",
     summary: "Turns any image into a dithered print, with 13 dither methods, retro palettes, and high-resolution export.",
     facts: { Category: "Image dithering", Methods: "13", Role: "Designer & developer" }, text: [] },
-  { id: "food-plotter", tags: ["tool", "web development", "data visualization", "3d"], months: "Oct – Present", year: 2026, title: "Food Plotter", field: "Tool", status: "In progress", img: IMG.fp, launch: "https://jarsh.us/food-plotter/",
+  { id: "food-plotter", gallery: [{"src": null, "caption": "Food Plotter cover art"}, {"caption": "Foods plotted by cost, portion size and taste"}], tags: ["tool", "web development", "data visualization", "3d"], months: "Oct – Present", year: 2026, title: "Food Plotter", field: "Tool", status: "In progress", img: IMG.fp, launch: "https://jarsh.us/food-plotter/",
     summary: "Plot foods in a rotatable 3D space by cost, portion size, and taste.",
     facts: { Axes: "Cost, portion, taste", Saving: "In your browser", Role: "Designer & developer" }, text: [] }
 ];
@@ -537,6 +604,8 @@ function relatedHTML(p) {
       <div class="tiles">${r.map(x => tileHTML(x.q, { shared: x.shared })).join("")}</div>
     </section>`;
 }
+// Gallery slides; a slide with src null shows the project's cover
+function galleryOf(p) { return (p.gallery || []).map(g => g.src === null ? { ...g, src: p.img, smooth: p.smooth } : g); }
 function projectView(p) {
   const facts = Object.entries(p.facts).map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")
     + `<div><dt>Dates</dt><dd>${p.months} ${p.year}</dd></div>`;
@@ -544,11 +613,17 @@ function projectView(p) {
     ? p.text.map(([h, t]) => `<h3>${h}</h3><p>${t}</p>`).join("")
     : `<h3>Overview</h3><p class="draft">Write a few lines on how it works and how you built it.</p>`;
   const art = `<span class="pa-img">${p.img ? `<img src="${p.img}" alt=""${p.smooth ? ' class="smooth"' : ""}>` : icons[p.icon]}</span>`;
-  const side = p.launch
-    ? `<a class="p-art" href="${p.launch}" target="_blank" rel="noopener" aria-label="Launch ${esc(p.title)} (opens in a new tab)">${art}
+  const n = galleryOf(p).length, imgs = `${n} image${n === 1 ? "" : "s"}`;
+  const side = `<div class="p-side">` + (p.launch
+    ? `<a class="p-art act" href="${p.launch}" target="_blank" rel="noopener" aria-label="Launch ${esc(p.title)} (opens in a new tab)">${art}
          <span class="pa-veil" aria-hidden="true"><span class="pa-go">Launch<span class="ne">↗</span></span></span>
-         <span class="pa-hint" aria-hidden="true"><span class="tri">▸</span>Click to launch</span></a>`
-    : `<div class="p-art" aria-hidden="true">${art}</div>`;
+         <span class="pa-hint" aria-hidden="true"><span class="tri">▸</span>Click to launch</span></a>
+       ${n ? `<button type="button" class="gal-link" data-gallery="${p.id}">View gallery, ${imgs}</button>` : ""}`
+    : n
+    ? `<button type="button" class="p-art act" data-gallery="${p.id}" aria-label="Open the ${esc(p.title)} gallery, ${imgs}">${art}
+         <span class="pa-veil" aria-hidden="true"><span class="pa-go">Open gallery</span></span>
+         <span class="pa-hint" aria-hidden="true"><span class="tri">▸</span>Click for images</span></button>`
+    : `<div class="p-art" aria-hidden="true">${art}</div>`) + `</div>`;
   return `
   <div class="page inner">
     <a class="back" href="#" data-route=""><span class="arr" aria-hidden="true">←</span>Back to work</a>
@@ -587,6 +662,7 @@ function artView() {
 
 // ---------- Change log (newest first; each update adds 0.01) ----------
 const CHANGELOG = [
+  { v: "1.32", date: "2026-10-22", notes: ["Project galleries: click a project's image to browse more images, with captions in the sidebar", "Games and tools keep click-to-launch and get a View gallery link", "Ten Year Tape gallery with four screenshots"] },
   { v: "1.31", date: "2026-10-22", notes: ["New Food Plotter cover: a grid of burgers, fries and shakes"] },
   { v: "1.30", date: "2026-10-22", notes: ["New pixel hot dog cover for Food Plotter"] },
   { v: "1.29", date: "2026-10-22", notes: ["Food Plotter now loads from its own GitHub repo, like the other apps"] },
@@ -706,6 +782,47 @@ app.addEventListener("keydown", (e) => {
   else if (e.key === "Tab") ddClose(false);
 });
 document.addEventListener("click", (e) => { if (!e.target.closest(".dd")) ddClose(false); });
+
+// ---------- Gallery ----------
+const gal = document.getElementById("gal");
+let galP = null, galI = 0, galFrom = null;
+function galSlides() { return galleryOf(galP); }
+function galShow(i) {
+  const g = galSlides(); galI = (i + g.length) % g.length;
+  const item = g[galI];
+  document.getElementById("galMedia").innerHTML = item.src
+    ? `<img src="${item.src}" alt="${esc(item.caption)}"${item.smooth ? ' class="smooth"' : ""}>`
+    : `<div class="gal-ph">Image coming soon</div>`;
+  document.getElementById("galCap").innerHTML = esc(item.caption) + (item.src ? "" : `<span class="soon">Image coming soon</span>`);
+  document.getElementById("galCount").textContent = `${galI + 1} / ${g.length}`;
+  document.querySelectorAll("#galList button").forEach((b, k) => b.setAttribute("aria-current", String(k === galI)));
+  [g[galI + 1], g[galI - 1]].forEach(x => { if (x && x.src) new Image().src = x.src; });   // preload neighbors
+}
+function openGallery(id, from) {
+  galP = projects.find(x => x.id === id); if (!galP) return;
+  const g = galSlides(); if (!g.length) return;
+  galFrom = from;
+  document.getElementById("galTitle").textContent = galP.title;
+  document.getElementById("galList").innerHTML = g.map((x, k) =>
+    `<li><button type="button" data-i="${k}"><span class="num">${String(k + 1).padStart(2, "0")}</span><span>${esc(x.caption)}${x.src ? "" : ` <span class="tc">to come</span>`}</span></button></li>`).join("");
+  const multi = g.length > 1;
+  document.getElementById("galPrev").hidden = !multi; document.getElementById("galNext").hidden = !multi;
+  galShow(0);
+  gal.showModal();
+  document.documentElement.style.overflow = "hidden";
+  document.getElementById("galClose").focus();
+}
+document.addEventListener("click", (e) => { const t = e.target.closest("[data-gallery]"); if (t) openGallery(t.dataset.gallery, t); });
+document.getElementById("galClose").addEventListener("click", () => gal.close());
+document.getElementById("galPrev").addEventListener("click", () => galShow(galI - 1));
+document.getElementById("galNext").addEventListener("click", () => galShow(galI + 1));
+document.getElementById("galList").addEventListener("click", (e) => { const b = e.target.closest("button[data-i]"); if (b) galShow(+b.dataset.i); });
+gal.addEventListener("click", (e) => { if (e.target === gal) gal.close(); });   // click outside the window
+gal.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") { e.preventDefault(); galShow(galI + 1); }
+  else if (e.key === "ArrowLeft") { e.preventDefault(); galShow(galI - 1); }
+});
+gal.addEventListener("close", () => { document.documentElement.style.overflow = ""; if (galFrom && document.contains(galFrom)) galFrom.focus(); });
 
 // ---------- Router ----------
 const routes = { about: aboutView, art: artView };
