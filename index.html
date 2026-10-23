@@ -201,7 +201,7 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
   transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
 }
 .p-actions .act-btn:first-child { background: var(--ink); color: var(--paper); }
-.act-btn .ar { display: inline-block; transition: transform 200ms var(--ease-out); }
+.act-btn .ar { width: 12px; height: 12px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: square; transition: transform 200ms var(--ease-out); }
 .act-btn:not(.off):hover, .act-btn:not(.off):focus-visible { background: var(--signal); border-color: var(--signal); color: #000; }
 .act-btn:not(.off):hover .ne, .act-btn:not(.off):focus-visible .ne { transform: translate(2px, -2px); }
 .act-btn:not(.off):hover .dn, .act-btn:not(.off):focus-visible .dn { transform: translateY(2px); }
@@ -645,20 +645,21 @@ function projectView(p) {
   const n = galleryOf(p).length, imgs = `${n} image${n === 1 ? "" : "s"}`;
   // Image square: still launches or opens the gallery on click, with the hover label but no blinking sign
   const side = `<div class="p-side">` + (p.launch
-    ? `<a class="p-art act" href="${p.launch}" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">${art}
-         <span class="pa-veil"><span class="pa-go">Launch<span class="ne">↗</span></span></span></a>`
+    ? `<div class="p-art" aria-hidden="true">${art}</div>`
     : n
     ? `<button type="button" class="p-art act" data-gallery="${p.id}" tabindex="-1" aria-hidden="true">${art}
          <span class="pa-veil"><span class="pa-go">Gallery<span class="ne">↗</span></span></span></button>`
     : `<div class="p-art" aria-hidden="true">${art}</div>`) + `</div>`;
   // Action column, left of the image: Launch (apps), Download Report, View Gallery
+  const AR_NE = `<svg class="ar ne" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 9L9 3M4 3h5v5"/></svg>`;
+  const AR_DN = `<svg class="ar dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2v8M2.5 6.5L6 10l3.5-3.5"/></svg>`;
   const report = p.report
-    ? `<a class="act-btn" href="${p.report}" download>Download Report<span class="ar dn" aria-hidden="true">↓</span></a>`
-    : `<span class="act-btn off" role="link" aria-disabled="true" title="Report coming soon">Download Report<span class="ar dn" aria-hidden="true">↓</span></span>`;
+    ? `<a class="act-btn" href="${p.report}" download>Download Report${AR_DN}</a>`
+    : `<span class="act-btn off" role="link" aria-disabled="true" title="Report coming soon">Download Report${AR_DN}</span>`;
   const actions = `<div class="p-actions">`
-    + (p.launch ? `<a class="act-btn" href="${p.launch}" target="_blank" rel="noopener" aria-label="Launch ${esc(p.title)} (opens in a new tab)">Launch<span class="ar ne" aria-hidden="true">↗</span></a>` : "")
+    + (p.launch ? `<a class="act-btn" href="${p.launch}" target="_blank" rel="noopener" aria-label="Launch ${esc(p.title)} (opens in a new tab)">Launch${AR_NE}</a>` : "")
     + report
-    + (n ? `<button type="button" class="act-btn" data-gallery="${p.id}" aria-label="View gallery, ${imgs}">View Gallery<span class="ar ne" aria-hidden="true">↗</span></button>` : "")
+    + (n ? `<button type="button" class="act-btn" data-gallery="${p.id}" aria-label="View gallery, ${imgs}">View Gallery${AR_NE}</button>` : "")
     + `</div>`;
   return `
   <div class="page inner">
@@ -699,6 +700,7 @@ function artView() {
 
 // ---------- Change log (newest first; each update adds 0.01) ----------
 const CHANGELOG = [
+  { v: "1.38", date: "2026-10-23", notes: ["The image on game, tool and website pages no longer launches on hover and click; use the Launch button", "Matching arrows on Launch, Download Report and View Gallery"] },
   { v: "1.37", date: "2026-10-23", notes: ["Project pages have an action column left of the image: Launch for apps, Download Report, and View Gallery", "Removed the blinking launch and gallery signs"] },
   { v: "1.36", date: "2026-10-23", notes: ["The jarsh.us report is now a dark brand and build guide, with full specs for keeping new pages and apps on brand"] },
   { v: "1.35", date: "2026-10-23", notes: ["Added jarsh.us as a project, with a gallery of the site", "Download Report button on project pages that have a report, starting with jarsh.us"] },
