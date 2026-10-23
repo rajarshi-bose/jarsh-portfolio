@@ -621,7 +621,7 @@ function projectView(p) {
        ${n ? `<button type="button" class="gal-link" data-gallery="${p.id}">View gallery, ${imgs}</button>` : ""}`
     : n
     ? `<button type="button" class="p-art act" data-gallery="${p.id}" aria-label="Open the ${esc(p.title)} gallery, ${imgs}">${art}
-         <span class="pa-veil" aria-hidden="true"><span class="pa-go">Open gallery</span></span>
+         <span class="pa-veil" aria-hidden="true"><span class="pa-go">Gallery<span class="ne">↗</span></span></span>
          <span class="pa-hint" aria-hidden="true"><span class="tri">▸</span>Click for images</span></button>`
     : `<div class="p-art" aria-hidden="true">${art}</div>`) + `</div>`;
   return `
@@ -662,6 +662,7 @@ function artView() {
 
 // ---------- Change log (newest first; each update adds 0.01) ----------
 const CHANGELOG = [
+  { v: "1.33", date: "2026-10-22", notes: ["Gallery hover now reads Gallery ↗, matching Launch ↗"] },
   { v: "1.32", date: "2026-10-22", notes: ["Project galleries: click a project's image to browse more images, with captions in the sidebar", "Games and tools keep click-to-launch and get a View gallery link", "Ten Year Tape gallery with four screenshots"] },
   { v: "1.31", date: "2026-10-22", notes: ["New Food Plotter cover: a grid of burgers, fries and shakes"] },
   { v: "1.30", date: "2026-10-22", notes: ["New pixel hot dog cover for Food Plotter"] },
