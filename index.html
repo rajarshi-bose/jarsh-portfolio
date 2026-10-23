@@ -509,13 +509,13 @@ const projects = [
   { id: "ten-year-tape", gallery: [{"src": "img/gallery/ten-year-tape/intro.png", "smooth": true, "caption": "Intro: the board before the market opens"}, {"src": "img/gallery/ten-year-tape/lobby.png", "smooth": true, "caption": "Lobby: players join a room before the game starts"}, {"src": "img/gallery/ten-year-tape/gameplay.png", "smooth": true, "caption": "Live trading: ten disguised companies and three index funds, with the news tape, order ticket, holdings and leaderboard"}, {"src": "img/gallery/ten-year-tape/closing-bell.png", "smooth": true, "caption": "Closing bell: the decade and the real companies are revealed"}], tags: ["game", "web development", "multiplayer", "game design", "end to end"], months: "Sep – Oct", year: 2026, title: "Ten Year Tape", field: "Game", status: "Complete", img: IMG.tyt, launch: "https://jarsh.us/ten-year-tape/",
     summary: "A multiplayer stock trading game played over a compressed decade of market tape.",
     facts: { Genre: "Stock trading", Players: "Multiplayer", Role: "Designer & developer" }, text: [] },
-  { id: "isle-of-man", gallery: [{"src": null, "caption": "Isle of Man cover art"}, {"caption": "A growing city on the island"}], tags: ["game", "web development", "pixel art", "simulation", "game design"], months: "Oct – Present", year: 2026, title: "Isle of Man", field: "Game", status: "In progress", img: IMG.iom, launch: "https://jarsh.us/isle-of-man/",
+  { id: "isle-of-man", gallery: [{"caption": "A growing city on the island"}], tags: ["game", "web development", "pixel art", "simulation", "game design"], months: "Oct – Present", year: 2026, title: "Isle of Man", field: "Game", status: "In progress", img: IMG.iom, launch: "https://jarsh.us/isle-of-man/",
     summary: "A pixel-art city builder set on a small island.",
     facts: { Genre: "City builder", Style: "Pixel art", Role: "Designer & developer" }, text: [] },
-  { id: "dither-press", gallery: [{"src": null, "smooth": true, "caption": "A cat photo, dithered in Dither Press"}, {"caption": "The Dither Press editor and its controls"}], tags: ["tool", "web development", "image processing", "pixel art", "end to end"], months: "Oct", year: 2026, title: "Dither Press", field: "Tool", status: "Complete", img: IMG.dp, smooth: true, launch: "https://jarsh.us/dither-press/",
+  { id: "dither-press", gallery: [{"caption": "The Dither Press editor and its controls"}], tags: ["tool", "web development", "image processing", "pixel art", "end to end"], months: "Oct", year: 2026, title: "Dither Press", field: "Tool", status: "Complete", img: IMG.dp, smooth: true, launch: "https://jarsh.us/dither-press/",
     summary: "Turns any image into a dithered print, with 13 dither methods, retro palettes, and high-resolution export.",
     facts: { Category: "Image dithering", Methods: "13", Role: "Designer & developer" }, text: [] },
-  { id: "food-plotter", gallery: [{"src": null, "caption": "Food Plotter cover art"}, {"caption": "Foods plotted by cost, portion size and taste"}], tags: ["tool", "web development", "data visualization", "3d"], months: "Oct – Present", year: 2026, title: "Food Plotter", field: "Tool", status: "In progress", img: IMG.fp, launch: "https://jarsh.us/food-plotter/",
+  { id: "food-plotter", gallery: [{"caption": "Foods plotted by cost, portion size and taste"}], tags: ["tool", "web development", "data visualization", "3d"], months: "Oct – Present", year: 2026, title: "Food Plotter", field: "Tool", status: "In progress", img: IMG.fp, launch: "https://jarsh.us/food-plotter/",
     summary: "Plot foods in a rotatable 3D space by cost, portion size, and taste.",
     facts: { Axes: "Cost, portion, taste", Saving: "In your browser", Role: "Designer & developer" }, text: [] }
 ];
@@ -662,6 +662,7 @@ function artView() {
 
 // ---------- Change log (newest first; each update adds 0.01) ----------
 const CHANGELOG = [
+  { v: "1.34", date: "2026-10-22", notes: ["Removed cover art from project galleries"] },
   { v: "1.33", date: "2026-10-22", notes: ["Gallery hover now reads Gallery ↗, matching Launch ↗"] },
   { v: "1.32", date: "2026-10-22", notes: ["Project galleries: click a project's image to browse more images, with captions in the sidebar", "Games and tools keep click-to-launch and get a View gallery link", "Ten Year Tape gallery with four screenshots"] },
   { v: "1.31", date: "2026-10-22", notes: ["New Food Plotter cover: a grid of burgers, fries and shakes"] },
