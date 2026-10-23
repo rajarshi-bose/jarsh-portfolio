@@ -191,6 +191,17 @@ header .where { grid-column: 10 / 13; text-align: right; color: var(--muted); }
 .p-meta { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 22px 0 0; font-size: 1.05rem; color: var(--muted); }
 .p-meta b { color: var(--ink); font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-left: 6px; }
 .p-side { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; min-width: 0; }
+.p-meta { align-items: center; }
+.report-btn {
+  display: inline-flex; align-items: center; gap: .4em; padding: 7px 13px;
+  background: var(--ink); color: var(--paper); font-weight: 700; font-size: .95rem; letter-spacing: -.01em;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.report-btn .dn { display: inline-block; transition: transform 200ms var(--ease-out); }
+.report-btn:hover, .report-btn:focus-visible { background: var(--signal); color: #000; }
+.report-btn:hover .dn, .report-btn:focus-visible .dn { transform: translateY(2px); }
+.report-btn:active { transform: scale(.97); }
+@media (prefers-reduced-motion: reduce) { .report-btn, .report-btn .dn { transition: none; } }
 .p-art { position: relative; aspect-ratio: 1; width: 100%; max-width: 100%; overflow: hidden; background: var(--ink); color: var(--paper); display: block; }
 button.p-art { border: 0; padding: 0; margin: 0; font: inherit; cursor: pointer; }
 .gal-link { font: 600 .95rem var(--font); color: var(--ink); background: none; border: 0; border-bottom: 1px solid var(--ink); padding: 0 0 1px; cursor: pointer; transition: color 150ms ease, border-color 150ms ease; }
@@ -449,6 +460,7 @@ const icons = {
     "....##..##......",
     "...#......#.....",
     "..#........#...."]),
+  house: `<svg viewBox="-2 -2 20 20" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M3 1H5V3H6V2H7V1H9V2H10V3H11V4H12V5H13V6H14V15H2V6H3Z"/></svg>`,
   tank: px([
     "................",
     ".....######.....",
@@ -517,7 +529,18 @@ const projects = [
     facts: { Category: "Image dithering", Methods: "13", Role: "Designer & developer" }, text: [] },
   { id: "food-plotter", gallery: [{"caption": "Foods plotted by cost, portion size and taste"}], tags: ["tool", "web development", "data visualization", "3d"], months: "Oct – Present", year: 2026, title: "Food Plotter", field: "Tool", status: "In progress", img: IMG.fp, launch: "https://jarsh.us/food-plotter/",
     summary: "Plot foods in a rotatable 3D space by cost, portion size, and taste.",
-    facts: { Axes: "Cost, portion, taste", Saving: "In your browser", Role: "Designer & developer" }, text: [] }
+    facts: { Axes: "Cost, portion, taste", Saving: "In your browser", Role: "Designer & developer" }, text: [] },
+  { id: "jarsh-us", report: "reports/jarsh-us-development-report.pdf",
+    gallery: [{"src": "img/gallery/jarsh-us/home.png", "smooth": true, "caption": "Home: the name sets in letter by letter above a 12-column grid"},
+              {"src": "img/gallery/jarsh-us/index.png", "smooth": true, "caption": "Project index with the type menu open and status dots"},
+              {"src": "img/gallery/jarsh-us/project.png", "smooth": true, "caption": "Project page: title, facts, keywords and the gallery prompt"},
+              {"src": "img/gallery/jarsh-us/gallery.png", "smooth": true, "caption": "Gallery window with captions in the sidebar"}],
+    tags: ["web development", "design system", "typography", "motion design", "end to end"],
+    months: "Oct – Present", year: 2026, title: "jarsh.us", field: "Website", status: "In progress", icon: "house",
+    summary: "This portfolio: a Swiss-style, single-file website with an animated project index, galleries, and one look shared across my web apps.",
+    facts: { Stack: "HTML, CSS, JavaScript", Hosting: "GitHub Pages, Cloudflare", Role: "Designer & developer" },
+    text: [["Overview", "jarsh.us collects my engineering work and the games and tools I build on the side. It is one HTML file with no build step, versioned in small steps, with every change recorded in the change log in the footer."],
+           ["What I did", "Designed and built the site end to end: a Swiss-style system with one typeface and a 12-column grid, letter-by-letter title animation, a filterable project index, project pages with keywords, related projects and image galleries, and a matching return button across every app hosted under jarsh.us."]] }
 ];
 
 // Split text into words of masked letters. Each letter has a red twin underneath for the hover roll.
@@ -630,7 +653,7 @@ function projectView(p) {
     <div class="p-head">
       <div>
         <h1 class="intro" id="intro" aria-label="${esc(p.title)}"><span aria-hidden="true">${letters(p.title, false)}</span></h1>
-        <p class="p-meta"><span>Project type:<b>${p.field}</b></span><span>Status:<b><i class="dot${p.status === "Complete" ? "" : " live"}"></i>${p.status}</b></span></p>
+        <p class="p-meta">${p.report ? `<a class="report-btn" href="${p.report}" download>Download Report<span class="dn" aria-hidden="true">↓</span></a>` : ""}<span>Project type:<b>${p.field}</b></span><span>Status:<b><i class="dot${p.status === "Complete" ? "" : " live"}"></i>${p.status}</b></span></p>
       </div>
       ${side}
     </div>
@@ -662,6 +685,7 @@ function artView() {
 
 // ---------- Change log (newest first; each update adds 0.01) ----------
 const CHANGELOG = [
+  { v: "1.35", date: "2026-10-23", notes: ["Added jarsh.us as a project, with a gallery of the site", "Download Report button on project pages that have a report, starting with jarsh.us"] },
   { v: "1.34", date: "2026-10-22", notes: ["Removed cover art from project galleries"] },
   { v: "1.33", date: "2026-10-22", notes: ["Gallery hover now reads Gallery ↗, matching Launch ↗"] },
   { v: "1.32", date: "2026-10-22", notes: ["Project galleries: click a project's image to browse more images, with captions in the sidebar", "Games and tools keep click-to-launch and get a View gallery link", "Ten Year Tape gallery with four screenshots"] },
