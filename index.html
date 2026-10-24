@@ -516,12 +516,12 @@ const projects = [
     summary: "A baffled fuel tank and modular plumbing for a KTM 690 that keeps pump pickup through 1.5 g of slosh.",
     facts: { Team: "TAMU Formula SAE IC", Role: "Fuel systems engineer", Scope: "Feed, lube, overpressure" },
     text: [["Overview", "The fuel and oil systems have to keep pressure stable through hard cornering, braking, and acceleration, while staying light and passing technical inspection."]] },
-  { id: "lumina-fluids-bay", gallery: [{"caption": "Fluids bay layout, CAD"}, {"caption": "Fluids bay hardware during assembly"}, {"caption": "Fluids bay installed in the vehicle"}], tags: ["lumina launch vehicle", "fluid systems", "hardware", "lifecycle", "end to end", "responsible engineer", "shifting scopes", "packaging constraints"], months: "Jun – Present", year: 2026, title: "Lumina Fluids Bay", field: "Hardware", status: "In progress", icon: "feed",
-    summary: "Feed system design for a liquid rocket engine running self-pressurizing nitrous oxide.",
-    facts: { Type: "Bipropellant liquid engine", Oxidizer: "Nitrous oxide", Focus: "Feed system" },
-    text: [["Overview", "Nitrous oxide is self-pressurizing, which simplifies the feed system but makes two-phase flow and tank pressure collapse real design concerns."]] },
+  { id: "lumina-fluids-bay", report: "reports/lumina-fluids-bay-report.pdf", gallery: [{"caption": "Fluids bay layout, CAD"}, {"caption": "Fluids bay hardware during assembly"}, {"caption": "Fluids bay installed in the vehicle"}], tags: ["lumina launch vehicle", "fluid systems", "hardware", "lifecycle", "end to end", "responsible engineer", "shifting scopes", "packaging constraints"], months: "Jun – Present", year: 2026, title: "Lumina Fluids Bay", field: "Hardware", status: "In progress", icon: "feed",
+    summary: "Propellant feed systems for Lumina, an ethanol and nitrous oxide launch vehicle powered by the regeneratively cooled UL-1 engine.",
+    facts: { Role: "Vehicle Fluids Lead", Propellants: "Ethanol, nitrous oxide", Engine: "UL-1, regeneratively cooled" },
+    text: [["Overview", "Development of liquid bipropellant (Ethanol x Nitrous), regeneratively cooled launch vehicle using the UL-1 Engine. Responsible for the end-to-end development of propellant feed systems, including line sizing, P&amp;ID, fluids bay packaging, build sequencing, and assembly."]] },
   { id: "ul-1-fluids", gallery: [{"caption": "Bent and fitted fluid lines"}, {"caption": "Fluids hardware installed on UL-1"}], tags: ["lumina launch vehicle", "fluid systems", "hardware", "lifecycle", "tube bending", "hands-on", "end to end"], months: "Jan – May", year: 2026, title: "UL-1 Fluids", field: "Hardware", status: "Complete", icon: "tank",
-    summary: "Fluid system hardware for the UL-1 launch vehicle.",
+    summary: "Fluid system hardware for the UL-1 engine.",
     facts: { Focus: "Vehicle fluid systems" },
     text: [] },
   { id: "ten-year-tape", gallery: [{"src": "img/gallery/ten-year-tape/intro.png", "smooth": true, "caption": "Intro: the board before the market opens"}, {"src": "img/gallery/ten-year-tape/lobby.png", "smooth": true, "caption": "Lobby: players join a room before the game starts"}, {"src": "img/gallery/ten-year-tape/gameplay.png", "smooth": true, "caption": "Live trading: ten disguised companies and three index funds, with the news tape, order ticket, holdings and leaderboard"}, {"src": "img/gallery/ten-year-tape/closing-bell.png", "smooth": true, "caption": "Closing bell: the decade and the real companies are revealed"}], tags: ["game", "web development", "multiplayer", "game design", "end to end"], months: "Sep – Oct", year: 2026, title: "Ten Year Tape", field: "Game", status: "Complete", img: IMG.tyt, launch: "https://jarsh.us/ten-year-tape/",
@@ -700,6 +700,7 @@ function artView() {
 
 // ---------- Change log (newest first; each update adds 0.01) ----------
 const CHANGELOG = [
+  { v: "1.39", date: "2026-10-23", notes: ["Lumina Fluids Bay report with the line sizing trade studies, downloadable from its project page", "Updated the Lumina Fluids Bay role, facts and overview"] },
   { v: "1.38", date: "2026-10-23", notes: ["The image on game, tool and website pages no longer launches on hover and click; use the Launch button", "Matching arrows on Launch, Download Report and View Gallery"] },
   { v: "1.37", date: "2026-10-23", notes: ["Project pages have an action column left of the image: Launch for apps, Download Report, and View Gallery", "Removed the blinking launch and gallery signs"] },
   { v: "1.36", date: "2026-10-23", notes: ["The jarsh.us report is now a dark brand and build guide, with full specs for keeping new pages and apps on brand"] },
